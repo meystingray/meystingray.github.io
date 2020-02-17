@@ -1,7 +1,9 @@
 ---
 date: "2016-12-30T21:49:57-07:00"
-title: A Plain Markdown Post
+title: Test of the emergency alert system
 ---
+
+Test 123 123
 
 This is a post written in plain Markdown (`*.md`) instead of R Markdown (`*.Rmd`). The major differences are:
 
