@@ -1,0 +1,22 @@
+{
+    "collab_server" : "",
+    "contents" : "",
+    "created" : 1584327594798.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "8F0A30EB",
+    "lastKnownWriteTime" : 1584327680,
+    "last_content_update" : 1584327680511,
+    "path" : "C:/Users/seant/OneDrive/Github/meystingray.github.io/config.toml",
+    "project_path" : "config.toml",
+    "properties" : {
+        "cursorPosition" : "36,24",
+        "scrollLine" : "28"
+    },
+    "relative_order" : 1,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "toml"
+}
