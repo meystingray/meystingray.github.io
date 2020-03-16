@@ -1,7 +1,7 @@
----
-slug: about
-title: About Hugo
----
++++
+title = "About Hugo"
+slug = "about"
++++
 
 Hugo is a static site engine written in Go.
 
