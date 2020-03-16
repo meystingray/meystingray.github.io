@@ -1,5 +1,5 @@
 ---
-title: "Hello World"
+title: "Leveraging ML in Spotfire"
 author: "Sean Conroy"
 date: 2020-03-15T21:13:14-05:00
 categories: ["R"]
@@ -13,6 +13,9 @@ knitr::opts_chunk$set(collapse = TRUE)
 # R Markdown
 
 Spotfire.  This is about using Spotfire as a front end for ML.
+
+Nobody seems to know much about Spotfire outside of the Oil & Gas industry.  I certainly had never
+heard of it.
 
 This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
 
