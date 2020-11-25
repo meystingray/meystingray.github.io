@@ -1,10 +1,8 @@
 ---
-title: '2020-11-25 This is a Test'
+title: "Test123"
 author: "Sean Conroy"
 date: "November 25, 2020"
-output:
-  md_document:
-    variant: markdown_github
+output: html_document
 ---
 
 ```{r setup, include=FALSE}
