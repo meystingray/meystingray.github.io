@@ -2,7 +2,9 @@
 title: '2020-11-25 This is a Test'
 author: "Sean Conroy"
 date: "November 25, 2020"
-output: html_document
+output:
+  md_document:
+    variant: markdown_github
 ---
 
 ```{r setup, include=FALSE}
