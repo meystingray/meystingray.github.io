@@ -6,7 +6,7 @@ date: "2015-06-14"
 slug: who-is-using-tranquilpeak-hugo-theme
 thumbnailImage: //d1u9biwaxjngwg.cloudfront.net/cover-image-showcase/city-750.jpg
 thumbnailImagePosition: left
-title: Does this work at all?
+title: George and Frank
 ---
 
 Here you can find a list of the blogs that use Tranquilpeak theme, with different styles and customizations.
