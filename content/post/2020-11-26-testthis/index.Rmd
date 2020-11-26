@@ -1,9 +1,13 @@
 ---
-title: "Test123"
-author: "Sean Conroy"
-date: "November 25, 2020"
-output: html_document
+title: TestThis
+author: Sean Conroy
+date: '2020-11-26'
+slug: testthis
+categories: []
+tags: []
 ---
+
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
