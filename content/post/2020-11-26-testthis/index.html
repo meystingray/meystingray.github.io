@@ -1,5 +1,5 @@
 ---
-title: TestThis
+title: Dallas Murder Rates
 author: Sean Conroy
 date: '2020-11-26'
 slug: testthis
@@ -11,22 +11,39 @@ tags: []
 <script src="index_files/anchor-sections/anchor-sections.js"></script>
 
 
-<div id="r-markdown" class="section level2">
-<h2>R Markdown</h2>
-<p>This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <a href="http://rmarkdown.rstudio.com" class="uri">http://rmarkdown.rstudio.com</a>.</p>
-<p>When you click the <strong>Knit</strong> button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:</p>
-<pre class="r"><code>summary(cars)</code></pre>
-<pre><code>##      speed           dist       
-##  Min.   : 4.0   Min.   :  2.00  
-##  1st Qu.:12.0   1st Qu.: 26.00  
-##  Median :15.0   Median : 36.00  
-##  Mean   :15.4   Mean   : 42.98  
-##  3rd Qu.:19.0   3rd Qu.: 56.00  
-##  Max.   :25.0   Max.   :120.00</code></pre>
+<div id="dallas-murder-rate" class="section level2">
+<h2>Dallas Murder Rate</h2>
+<p>Based on the following data set from Dallas Open Data: <a href="https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7" class="uri">https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7</a></p>
 </div>
-<div id="including-plots" class="section level2">
-<h2>Including Plots</h2>
-<p>You can also embed plots, for example:</p>
-<p><img src="index_files/figure-html/pressure-1.png" width="672" /></p>
-<p>Note that the <code>echo = FALSE</code> parameter was added to the code chunk to prevent printing of the R code that generated the plot.</p>
+<div id="preparing-the-data" class="section level2">
+<h2>Preparing the data</h2>
+<p>We extract murder incidents by looking for “MURDER” or “HOMICIDE” in the officer’s incident description.</p>
+<pre class="r"><code>Murder &lt;- PI[grepl(&quot;MURDER&quot;,offincident) | grepl(&quot;HOMICIDE&quot;,offincident),]
+Murder[,Date := as.Date(substr(date1,1,10))]
+Murder[,MonthDate := as.Date(paste0(format(Date,&quot;%Y-%m&quot;),&quot;-01&quot;))]
+setorder(Murder,Date)
+
+Murder[,NumPerDay := .N,by = Date]
+Murder[,NumPerMonth := .N,by = MonthDate]
+
+Murder[,SmoothNumPerDay := predict(smooth.spline(NumPerDay,df = 20))$y]
+Murder[,SmoothNumPerMonth := predict(smooth.spline(NumPerMonth,df = 10))$y]</code></pre>
+<pre class="r"><code>plot(Murder[,.N,by = Date])
+lines(Murder$Date,Murder$SmoothNumPerDay,col = &quot;red&quot;)</code></pre>
+<p><img src="index_files/figure-html/plots-1.png" width="672" /></p>
+<pre class="r"><code>plot(Murder[,.N,by = MonthDate])
+lines(Murder$MonthDate,Murder$SmoothNumPerMonth,col = &quot;red&quot;)</code></pre>
+<p><img src="index_files/figure-html/plots-2.png" width="672" /></p>
+<pre class="r"><code>ggplot(Murder,aes(x = MonthDate,y = SmoothNumPerMonth)) + geom_line() + geom_point() + facet_wrap(~ offincident)</code></pre>
+<pre><code>## geom_path: Each group consists of only one observation. Do you need to adjust
+## the group aesthetic?</code></pre>
+<p><img src="index_files/figure-html/plots-3.png" width="672" /></p>
+<pre class="r"><code>ggplot(Murder,aes(x = Date,y = NumPerDay,color = offincident)) + geom_point()</code></pre>
+<p><img src="index_files/figure-html/plots-4.png" width="672" /></p>
+<pre class="r"><code>ggplot(Murder,aes(x = MonthDate,y = SmoothNumPerMonth)) + geom_line() + geom_point()</code></pre>
+<p><img src="index_files/figure-html/plots-5.png" width="672" /></p>
+<pre class="r"><code>ggplot(Murder,aes(x = MonthDate)) + geom_bar()</code></pre>
+<p><img src="index_files/figure-html/plots-6.png" width="672" /></p>
+<pre class="r"><code>ggplot(Murder,aes(x = comprace)) + geom_bar()</code></pre>
+<p><img src="index_files/figure-html/plots-7.png" width="672" /></p>
 </div>

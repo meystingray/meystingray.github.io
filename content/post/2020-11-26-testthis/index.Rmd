@@ -1,5 +1,5 @@
 ---
-title: TestThis
+title: Dallas Murder Rates
 author: Sean Conroy
 date: '2020-11-26'
 slug: testthis
@@ -13,22 +13,55 @@ tags: []
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## R Markdown
+## Dallas Murder Rate
 
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+Based on the following data set from Dallas Open Data: <https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7>
 
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
 
-```{r cars}
-summary(cars)
+```{r LoadData, echo = FALSE}
+
+
+PI <- readRDS("C:/Users/sconroy/Desktop/Debug/PoliceIncidents.RDS")
+library(data.table)
+library(ggplot2)
+setDT(PI)
+
 ```
 
-## Including Plots
+## Preparing the data
+We extract murder incidents by looking for "MURDER" or "HOMICIDE" in the officer's incident description.
 
-You can also embed plots, for example:
 
-```{r pressure, echo=FALSE}
-plot(pressure)
+```{r dataprep, echo=TRUE}
+
+Murder <- PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident),]
+Murder[,Date := as.Date(substr(date1,1,10))]
+Murder[,MonthDate := as.Date(paste0(format(Date,"%Y-%m"),"-01"))]
+setorder(Murder,Date)
+
+Murder[,NumPerDay := .N,by = Date]
+Murder[,NumPerMonth := .N,by = MonthDate]
+
+Murder[,SmoothNumPerDay := predict(smooth.spline(NumPerDay,df = 20))$y]
+Murder[,SmoothNumPerMonth := predict(smooth.spline(NumPerMonth,df = 10))$y]
+
 ```
 
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
+
+```{r plots, echo=TRUE}
+plot(Murder[,.N,by = Date])
+lines(Murder$Date,Murder$SmoothNumPerDay,col = "red")
+
+plot(Murder[,.N,by = MonthDate])
+lines(Murder$MonthDate,Murder$SmoothNumPerMonth,col = "red")
+
+ggplot(Murder,aes(x = MonthDate,y = SmoothNumPerMonth)) + geom_line() + geom_point() + facet_wrap(~ offincident)
+
+ggplot(Murder,aes(x = Date,y = NumPerDay,color = offincident)) + geom_point()
+ggplot(Murder,aes(x = MonthDate,y = SmoothNumPerMonth)) + geom_line() + geom_point()
+
+ggplot(Murder,aes(x = MonthDate)) + geom_bar()
+ggplot(Murder,aes(x = comprace)) + geom_bar()
+
+```
+
