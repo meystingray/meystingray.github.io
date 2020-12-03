@@ -15,6 +15,34 @@ tags: []
 <h2>Dallas Murder Rate</h2>
 <p>Based on the following data set from Dallas Open Data: <a href="https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7" class="uri">https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7</a></p>
 <p>Data refresh date:</p>
-<pre class="r"><code>Sys.Date()</code></pre>
 <pre><code>## [1] &quot;2020-12-02&quot;</code></pre>
+<p>Load data directly from DallasOpenData using Socrata API:</p>
+<pre class="r"><code>#PI &lt;- read.socrata(&quot;https://www.dallasopendata.com/resource/qv6i-rri7.csv&quot;)
+PI &lt;- readRDS(&quot;C:/Users/sconroy/Desktop/Debug/PoliceIncidents.RDS&quot;)
+setDT(PI)</code></pre>
+<p>First, let’s extract murder incidents by looking for “MURDER” or “HOMICIDE” in the officer’s incident description.</p>
+<pre class="r"><code>Murder &lt;- PI[grepl(&quot;MURDER&quot;,offincident) | grepl(&quot;HOMICIDE&quot;,offincident),]
+Murder[,Date := as.Date(substr(date1,1,10))]
+
+# Add Dates and Incidents / Day &amp; Month counts 
+Murder[,MonthDate := as.Date(paste0(format(Date,&quot;%Y-%m&quot;),&quot;-01&quot;))]
+setorder(Murder,Date)
+
+Murder[,NumPerDay := .N,by = Date]
+Murder[,NumPerMonth := .N,by = MonthDate]</code></pre>
+<p>Take a look at Murder rates over the last few years</p>
+<pre class="r"><code># Smooth Murder Rates for plotting
+Murder[,SmoothNumPerDay := predict(smooth.spline(NumPerDay,df = 20))$y]
+Murder[,SmoothNumPerMonth := predict(smooth.spline(NumPerMonth,df = 10))$y]
+
+# Plot Num of Murders per Month and Day
+ggplot(Murder) +
+    geom_line(aes(x = MonthDate,y = SmoothNumPerMonth,color = &quot;red&quot;)) + 
+    geom_point(data = Murder,aes(x = Date,y = NumPerMonth)) + 
+    geom_line(aes(x = Date,y = SmoothNumPerDay,color = &quot;blue&quot;)) +
+    ggtitle(&quot;Murder Rate Per Month&quot;) + 
+    scale_colour_manual(name = &#39;Legend&#39;, 
+                        values = c(&#39;blue&#39;=&#39;blue&#39;,&#39;red&#39;=&#39;red&#39;), labels = c(&#39;Per Month&#39;,&#39;Per Day&#39;))</code></pre>
+<p><img src="index_files/figure-html/Smooth%20Data-1.png" width="672" /></p>
+<p>Yes - it definitely looks like there’s an uptick in the last few months of 2020!</p>
 </div>

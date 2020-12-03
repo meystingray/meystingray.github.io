@@ -10,7 +10,12 @@ tags: []
 
 
 ```{r setup, include=FALSE}
+
 knitr::opts_chunk$set(echo = TRUE)
+library(RSocrata)
+library(data.table)
+library(ggplot2)
+
 ```
 
 ## Dallas Murder Rate
@@ -19,17 +24,51 @@ Based on the following data set from Dallas Open Data: <https://www.dallasopenda
 
 
 Data refresh date:
-```{r printDate, echo = TRUE}
-Sys.Date()
-
+```{r printDate, echo = FALSE}
+print(Sys.Date())
 ```
 
-```{r LoadData, echo = FALSE}
-library("RSocrata")
+Load data directly from DallasOpenData using Socrata API:
+```{r LoadData, echo = TRUE}
+
 #PI <- read.socrata("https://www.dallasopendata.com/resource/qv6i-rri7.csv")
-#PI <- readRDS("C:/Users/sconroy/Desktop/Debug/PoliceIncidents.RDS")
-#setDT(PI)
-library(data.table)
-library(ggplot2)
+PI <- readRDS("C:/Users/sconroy/Desktop/Debug/PoliceIncidents.RDS")
+setDT(PI)
 
 ```
+
+
+First, let's extract murder incidents by looking for "MURDER" or "HOMICIDE" in the officer's incident description.
+```{r Extract Murders, echo = TRUE}
+Murder <- PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident),]
+Murder[,Date := as.Date(substr(date1,1,10))]
+
+# Add Dates and Incidents / Day & Month counts 
+Murder[,MonthDate := as.Date(paste0(format(Date,"%Y-%m"),"-01"))]
+setorder(Murder,Date)
+
+Murder[,NumPerDay := .N,by = Date]
+Murder[,NumPerMonth := .N,by = MonthDate]
+
+```
+
+
+Take a look at Murder rates over the last few years
+```{r Smooth Data, echo = TRUE}
+# Smooth Murder Rates for plotting
+Murder[,SmoothNumPerDay := predict(smooth.spline(NumPerDay,df = 20))$y]
+Murder[,SmoothNumPerMonth := predict(smooth.spline(NumPerMonth,df = 10))$y]
+
+# Plot Num of Murders per Month and Day
+ggplot(Murder) +
+    geom_line(aes(x = MonthDate,y = SmoothNumPerMonth,color = "red")) + 
+    geom_point(data = Murder,aes(x = Date,y = NumPerMonth)) + 
+    geom_line(aes(x = Date,y = SmoothNumPerDay,color = "blue")) +
+    ggtitle("Murder Rate Per Month") + 
+    scale_colour_manual(name = 'Legend', 
+                        values = c('blue'='blue','red'='red'), labels = c('Per Month','Per Day'))
+
+```
+
+Yes - it definitely looks like there's an uptick in the last few months of 2020!
+
