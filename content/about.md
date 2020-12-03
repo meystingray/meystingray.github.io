@@ -1,6 +1,16 @@
 ---
-date: "2016-05-05T21:48:51-07:00"
-title: About
+title: "About"
+date: '2020-12-02'
 ---
 
-This is a "hello world" example website for the [**blogdown**](https://github.com/rstudio/blogdown) package. The theme was forked from [@jrutheiser/hugo-lithium-theme](https://github.com/jrutheiser/hugo-lithium-theme) and modified by [Yihui Xie](https://github.com/yihui/hugo-lithium).
+This is the personal website of Sean Conroy.
+
+![This is not me](./IMG_6575.png "Not working")
+
+My interests are in applying statistics and machine learning to big hairy problems, and seeing if anything sticks.
+
+
+Why doesn't this work.
+
+
+The theme was forked from [@jrutheiser/hugo-lithium-theme](https://github.com/jrutheiser/hugo-lithium-theme) and modified by [Yihui Xie](https://github.com/yihui/hugo-lithium).
