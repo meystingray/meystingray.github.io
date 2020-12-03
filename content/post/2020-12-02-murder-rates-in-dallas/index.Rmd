@@ -32,15 +32,16 @@ Load data directly from DallasOpenData using Socrata API:
 ```{r LoadData, echo = TRUE}
 
 #PI <- read.socrata("https://www.dallasopendata.com/resource/qv6i-rri7.csv")
-PI <- readRDS("C:/Users/sconroy/Desktop/Debug/PoliceIncidents.RDS")
-setDT(PI)
+#PI <- readRDS("C:/Users/sconroy/Desktop/Debug/PoliceIncidents.RDS")
+#setDT(PI)
 
 ```
 
 
 First, let's extract murder incidents by looking for "MURDER" or "HOMICIDE" in the officer's incident description.
 ```{r Extract Murders, echo = TRUE}
-Murder <- PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident),]
+Murder <- readRDS("C:/Users/sconroy/Desktop/Debug/Murder.RDS")
+#Murder <- PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident),]
 Murder[,Date := as.Date(substr(date1,1,10))]
 
 # Add Dates and Incidents / Day & Month counts 
@@ -64,9 +65,9 @@ ggplot(Murder) +
     geom_line(aes(x = MonthDate,y = SmoothNumPerMonth,color = "red")) + 
     geom_point(data = Murder,aes(x = Date,y = NumPerMonth)) + 
     geom_line(aes(x = Date,y = SmoothNumPerDay,color = "blue")) +
-    ggtitle("Murder Rate Per Month") + 
-    scale_colour_manual(name = 'Legend', 
-                        values = c('blue'='blue','red'='red'), labels = c('Per Month','Per Day'))
+    ggtitle("Murder Rates") + ylab("# Murders") + 
+    scale_colour_manual(name = '',values = c('blue'='blue','red'='red'),
+                        labels = c('Per Day','Per Month'))
 
 ```
 
