@@ -1,11 +1,12 @@
 ---
 title: Murder Rates in Dallas
-author: ~
+author: Sean Conroy
 date: '2020-12-02'
 slug: murder-rates-in-dallas
 categories: []
 tags: []
 ---
+
 
 
 ```{r setup, include=FALSE}
@@ -32,5 +33,3 @@ library(data.table)
 library(ggplot2)
 
 ```
-
-## Preparing the data
