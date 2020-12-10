@@ -15,7 +15,7 @@ tags: []
 <div id="dallas-murder-rate" class="section level2">
 <h2>Dallas Murder Rate</h2>
 <p>Based on the following data set from Dallas Open Data:
-<a href="https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7" class="uri">https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7</a></p>
+<a href="https://www.dallasopendata.com/Public-Safety/Public-Safety-Police-Incidents/yn72-daik" class="uri">https://www.dallasopendata.com/Public-Safety/Public-Safety-Police-Incidents/yn72-daik</a></p>
 <p>Data refresh date:</p>
 <pre><code>## [1] &quot;2020-12-09&quot;</code></pre>
 <p>Load data directly from DallasOpenData using Socrata API:</p>
@@ -91,7 +91,20 @@ table(Murder$offincident)</code></pre>
 ##                                               7 
 ##                                          MURDER 
 ##                                             471</code></pre>
-<pre class="r"><code>ggplot(Murder[!(offincident %in% c(&quot;CAPITAL MURDER WHILE REMUNERATION&quot;,&quot;CRIMINAL NEGLIGENT HOMICIDE (DISTRACTED DRIVING&quot;))]) +
+<pre class="r"><code>ggplot(Murder[!(offincident %in% c(&quot;CAPITAL MURDER WHILE REMUNERATION&quot;,
+                                   &quot;CRIMINAL NEGLIGENT HOMICIDE (DISTRACTED DRIVING&quot;))]) +
     geom_bar(aes(x = MonthDate)) + facet_wrap(~ offincident)</code></pre>
 <p><img src="index_files/figure-html/Offense%20Type-1.png" width="672" /></p>
+<p>Some interesting codes, especially “Capital Murder by Terror Threat”. Police shootings seem very low.</p>
+<p>The data also includes some information about the victim race.</p>
+<pre class="r"><code># Victim Rate per Race
+Murder[,NumPerRace := .N,by = comprace]
+Murder[,PercentPerRace := round(100*.N/nrow(Murder),digits = 0),by = comprace]
+Murder[,PercentPerRace := paste0(PercentPerRace,&quot;%&quot;)]
+ggplot(Murder) + geom_bar(aes(x = comprace)) +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
+    xlab(&quot;&quot;) + ylab(&quot;# per Victim Race&quot;) + 
+    geom_text(aes(x = comprace,y = NumPerRace,label = PercentPerRace),vjust = -0.25) +
+    ggtitle(&quot;Victim Count by Race&quot;)</code></pre>
+<p><img src="index_files/figure-html/Victim%20Race-1.png" width="672" /></p>
 </div>

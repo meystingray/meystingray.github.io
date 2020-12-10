@@ -14,13 +14,13 @@ knitr::opts_chunk$set(echo = TRUE)
 library(RSocrata)
 library(data.table)
 library(ggplot2)
-
+library(stringr)
 ```
 
 ## Dallas Murder Rate
 
 Based on the following data set from Dallas Open Data:
-<https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7>
+<https://www.dallasopendata.com/Public-Safety/Public-Safety-Police-Incidents/yn72-daik>
     
     
 Data refresh date:
@@ -111,14 +111,34 @@ ggplot(Murder[Date > as.Date("2020-01-01"),],aes(x = MonthDate)) + geom_bar() +
     geom_text(aes(x = MonthDate,y = NumPerMonth,label = NumPerMonth),vjust = -0.25)
 ```
 
+
 ```{r Cleanup, echo=FALSE}
 Murder[offincident == "CAPITAL MURDER BY TERROR THREAT/OTHER FELONY",offincident := "CAPITAL MURDER BY TERROR THREAT"]
 ```
+
 
 The data also includes something called "offincident", which is likely Offense Type.  Let's take a look:
 ```{r Offense Type, echo=TRUE}
 # Plot by Incident Type
 table(Murder$offincident)
-ggplot(Murder[!(offincident %in% c("CAPITAL MURDER WHILE REMUNERATION","CRIMINAL NEGLIGENT HOMICIDE (DISTRACTED DRIVING"))]) +
+ggplot(Murder[!(offincident %in% c("CAPITAL MURDER WHILE REMUNERATION",
+                                   "CRIMINAL NEGLIGENT HOMICIDE (DISTRACTED DRIVING"))]) +
     geom_bar(aes(x = MonthDate)) + facet_wrap(~ offincident)
+```
+
+Some interesting codes, especially "Capital Murder by Terror Threat".  Police shootings seem very low.
+
+
+The data also includes some information about the victim race.
+```{r Victim Race, echo=TRUE}
+# Victim Rate per Race
+Murder[,NumPerRace := .N,by = comprace]
+Murder[,PercentPerRace := round(100*.N/nrow(Murder),digits = 0),by = comprace]
+Murder[,PercentPerRace := paste0(PercentPerRace,"%")]
+ggplot(Murder) + geom_bar(aes(x = comprace)) +
+    scale_x_discrete(labels = function(x) str_wrap(x, width = 10)) +
+    xlab("") + ylab("# per Victim Race") + 
+    geom_text(aes(x = comprace,y = NumPerRace,label = PercentPerRace),vjust = -0.25) +
+    ggtitle("Victim Count by Race")
+
 ```
