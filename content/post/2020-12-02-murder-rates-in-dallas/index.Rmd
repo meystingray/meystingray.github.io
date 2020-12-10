@@ -28,7 +28,7 @@ print(Sys.Date())
 ```
 
 Load data directly from DallasOpenData using Socrata API:
-    ```{r LoadData, echo = TRUE}
+```{r LoadData, echo = TRUE}
 
 #PI <- read.socrata("https://www.dallasopendata.com/resource/qv6i-rri7.csv")
 #PI <- readRDS("C:/Users/sconroy/Desktop/Debug/PoliceIncidents.RDS")
@@ -82,12 +82,25 @@ ggplot(Murder) +
 ```
 Yes - it definitely looks like there's an uptick in the last few months of 2020!
 
-
 Let's take a look at the same data, but bin it by week instead of month:
-    ```{r Weekly Murder Rate, echo = TRUE}
+```{r Weekly Murder Rate, echo = TRUE}
 ggplot(Murder) +
     geom_point(aes(x = WeekDate,y = NumPerWeek)) + 
     geom_line(aes(x = WeekDate,y = SmoothNumPerWeek),color = "red") +
     ggtitle("Murder Rates per Week") + ylab("# Murders")
+
+# The rates look even worse when binned by week - because a few incidents were concentrated?
+
+ggplot(Murder[Date >= as.Date("2020-06-01"),]) +
+    geom_point(aes(x = Date,y = NumPerDay)) + 
+    geom_line(aes(x = WeekDate,y = SmoothNumPerDay),color = "red") +
+    ggtitle("Murder Rates per Day") + ylab("# Murders")
 ```
-The rates look even worse when binned by week - because a few incidents were concentrated?
+It looks like there's been several days of 3 murders/day recently, which is the spike in the weekly chart.
+
+Let's look at just 2020
+```{r BarPlot Murder Rate 2020 Only, echo=TRUE}
+ggplot(Murder[Date > as.Date("2020-01-01"),],aes(x = MonthDate)) + geom_bar() +
+    ylab("# Murders per Month") + ggtitle("2020 Murders Per Month") +
+    geom_text(aes(x = MonthDate,y = NumPerMonth,label = NumPerMonth),vjust = -0.25)
+```
