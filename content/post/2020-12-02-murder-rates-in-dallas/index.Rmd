@@ -142,3 +142,53 @@ ggplot(Murder) + geom_bar(aes(x = comprace)) +
     ggtitle("Victim Count by Race")
 
 ```
+
+
+Let's take a look at the Victim Rate per Police Shift
+Dallas Police Watch to Time Reference: <https://www.dallaspolice.net/joindpd/Pages/SalaryBenefits.aspx>
+```{r Per Watch}
+Murder[,NumPerWatch := .N,by = watch]
+Murder[watch == 1,Shift := "11pm - 7am"]
+Murder[watch == 2,Shift := "7am - 3pm"]
+Murder[watch == 3,Shift := "3pm - 11pm"]
+Murder$Shift <- factor(Murder$Shift,levels = c("11pm - 7am", "7am - 3pm", "3pm - 11pm"))
+ggplot(Murder,aes(x = Shift)) + geom_bar() + 
+    xlab("") + ylab("# per Shift") + geom_text(aes(x = Shift,y = NumPerWatch,label = NumPerWatch),vjust = -0.25) +
+    ggtitle("Murder Rate per Shift")
+```
+
+Most murders occur between 11pm and 7am.  No suprises there.
+
+
+Age distribution of victims per year:
+```{r Per Victim Age Distribution}
+ggplot(Murder,aes(x = compage)) + geom_histogram(bins = 10) + facet_wrap(~ servyr)
+```
+Looks like the ages of the victimes are left-skewed towards younger victims, peaking in the 20's.
+
+Sex distrbution of victims:
+```{r Per Victim Sex Distribution}
+Murder[,NumPerYear := .N,by = c("servyr")]
+Murder[,NumPerSexPerYear := .N,by = c("compsex","servyr")]
+Murder[,PercentPerSexPerYear := .N/NumPerYear,by = c("compsex","servyr")]
+Murder$PercentPerSexPerYear <- paste0(format(100*Murder$PercentPerSexPerYear,digits = 0),"%")
+ggplot(Murder,aes(x = compsex)) + geom_bar() + facet_wrap(~ servyr) + 
+    geom_text(aes(x = compsex,y = NumPerSexPerYear,
+                  label = PercentPerSexPerYear),
+                  vjust = -0.25) +
+    ggtitle("Murder Rate per Sex")
+
+```
+Appears that the 2020 is unusually skewed toward men being the victims.
+
+Increases Per Year Per Victim Race, Gender and Age
+```{r Increase Per Year Per community, echo=TRUE}
+ggplot(Murder[comprace == "Black" & compsex == "Male" & compage < 30,],aes(x = servyr)) + geom_bar() + ggtitle("Murder Rate Per Year: Black Males Under 30")
+ggplot(Murder[comprace == "Black" & compsex == "Male" & compage >= 30,],aes(x = servyr)) + geom_bar() + ggtitle("Murder Rate Per Year: Black Males Over 30")
+ggplot(Murder[comprace == "Black" & compsex == "Female",],aes(x = servyr)) + geom_bar() + ggtitle("Murder Rate Per Year: Black Females")
+ggplot(Murder[comprace == "White" & compsex == "Male" & compage < 30,],aes(x = servyr)) + geom_bar() + ggtitle("Murder Rate Per Year: White Males Under 30")
+ggplot(Murder[comprace == "White" & compsex == "Male" & compage >= 30,],aes(x = servyr)) + geom_bar() + ggtitle("Murder Rate Per Year: White Males Over 30")
+ggplot(Murder[comprace == "Hispanic or Latino" & compsex == "Male" & compage < 30,],aes(x = servyr)) + geom_bar() + ggtitle("Murder Rate Per Year: Hispanic Males Under 30")
+ggplot(Murder[comprace == "Hispanic or Latino" & compsex == "Male" & compage >= 30,],aes(x = servyr)) + geom_bar() + ggtitle("Murder Rate Per Year: Hispanic Males Over 30")
+```
+We see a significant increase in White and Hispanic Males Over 30 and a Significant Decrease in While Males Under 30.
