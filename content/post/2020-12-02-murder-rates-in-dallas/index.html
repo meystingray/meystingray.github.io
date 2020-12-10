@@ -14,7 +14,8 @@ tags: []
 
 <div id="dallas-murder-rate" class="section level2">
 <h2>Dallas Murder Rate</h2>
-<p>Based on the following data set from Dallas Open Data: <a href="https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7" class="uri">https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7</a></p>
+<p>Based on the following data set from Dallas Open Data:
+<a href="https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7" class="uri">https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7</a></p>
 <p>Data refresh date:</p>
 <pre><code>## [1] &quot;2020-12-09&quot;</code></pre>
 <p>Load data directly from DallasOpenData using Socrata API:</p>
@@ -50,8 +51,8 @@ Murder[,SmoothNumPerMonth := predict(smooth.spline(NumPerMonth,df = 10))$y]</cod
     ggtitle(&quot;Murder Rates&quot;) + ylab(&quot;# Murders&quot;) + 
     scale_colour_manual(name = &#39;&#39;,values = c(&#39;blue&#39;=&#39;blue&#39;,&#39;red&#39;=&#39;red&#39;),
                         labels = c(&#39;Per Day&#39;,&#39;Per Month&#39;))</code></pre>
-<p><img src="index_files/figure-html/Monthly%20Murder%20Rate-1.png" width="672" />
-Yes - it definitely looks like there’s an uptick in the last few months of 2020!</p>
+<p><img src="index_files/figure-html/Monthly%20Murder%20Rate-1.png" width="672" /></p>
+<p>Yes - it definitely looks like there’s an uptick in the last few months of 2020!</p>
 <p>Let’s take a look at the same data, but bin it by week instead of month:</p>
 <pre class="r"><code>ggplot(Murder) +
     geom_point(aes(x = WeekDate,y = NumPerWeek)) + 
@@ -65,9 +66,32 @@ Yes - it definitely looks like there’s an uptick in the last few months of 202
     ggtitle(&quot;Murder Rates per Day&quot;) + ylab(&quot;# Murders&quot;)</code></pre>
 <p><img src="index_files/figure-html/Recent%20Murder%20Rate-1.png" width="672" /></p>
 <p>It looks like there’s been several days of 3 murders/day recently, which is the spike in the weekly chart.</p>
-<p>Let’s look at just 2020</p>
+<p>Let’s look at just 2020:</p>
 <pre class="r"><code>ggplot(Murder[Date &gt; as.Date(&quot;2020-01-01&quot;),],aes(x = MonthDate)) + geom_bar() +
     ylab(&quot;# Murders per Month&quot;) + ggtitle(&quot;2020 Murders Per Month&quot;) +
     geom_text(aes(x = MonthDate,y = NumPerMonth,label = NumPerMonth),vjust = -0.25)</code></pre>
 <p><img src="index_files/figure-html/BarPlot%20Murder%20Rate%202020%20Only-1.png" width="672" /></p>
+<p>The data also includes something called “offincident”, which is likely Offense Type. Let’s take a look:</p>
+<pre class="r"><code># Plot by Incident Type
+table(Murder$offincident)</code></pre>
+<pre><code>## 
+##                 CAPITAL MURDER BY TERROR THREAT 
+##                                             120 
+##              CAPITAL MURDER OF MULTIPLE PERSONS 
+##                                              33 
+##               CAPITAL MURDER WHILE REMUNERATION 
+##                                               1 
+##                     CRIMINAL NEGLIGENT HOMICIDE 
+##                                             106 
+## CRIMINAL NEGLIGENT HOMICIDE (DISTRACTED DRIVING 
+##                                               2 
+##                                        HOMICIDE 
+##                                              15 
+##                      HOMICIDE (POLICE SHOOTING) 
+##                                               7 
+##                                          MURDER 
+##                                             471</code></pre>
+<pre class="r"><code>ggplot(Murder[!(offincident %in% c(&quot;CAPITAL MURDER WHILE REMUNERATION&quot;,&quot;CRIMINAL NEGLIGENT HOMICIDE (DISTRACTED DRIVING&quot;))]) +
+    geom_bar(aes(x = MonthDate)) + facet_wrap(~ offincident)</code></pre>
+<p><img src="index_files/figure-html/Offense%20Type-1.png" width="672" /></p>
 </div>

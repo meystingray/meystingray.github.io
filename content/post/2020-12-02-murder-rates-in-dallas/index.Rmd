@@ -19,7 +19,8 @@ library(ggplot2)
 
 ## Dallas Murder Rate
 
-Based on the following data set from Dallas Open Data: <https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7>
+Based on the following data set from Dallas Open Data:
+<https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7>
     
     
 Data refresh date:
@@ -80,6 +81,7 @@ ggplot(Murder) +
                         labels = c('Per Day','Per Month'))
 
 ```
+
 Yes - it definitely looks like there's an uptick in the last few months of 2020!
 
 Let's take a look at the same data, but bin it by week instead of month:
@@ -101,9 +103,22 @@ ggplot(Murder[Date >= as.Date("2020-06-01"),]) +
 
 It looks like there's been several days of 3 murders/day recently, which is the spike in the weekly chart.
 
-Let's look at just 2020
+
+Let's look at just 2020:
 ```{r BarPlot Murder Rate 2020 Only, echo=TRUE}
 ggplot(Murder[Date > as.Date("2020-01-01"),],aes(x = MonthDate)) + geom_bar() +
     ylab("# Murders per Month") + ggtitle("2020 Murders Per Month") +
     geom_text(aes(x = MonthDate,y = NumPerMonth,label = NumPerMonth),vjust = -0.25)
+```
+
+```{r Cleanup, echo=FALSE}
+Murder[offincident == "CAPITAL MURDER BY TERROR THREAT/OTHER FELONY",offincident := "CAPITAL MURDER BY TERROR THREAT"]
+```
+
+The data also includes something called "offincident", which is likely Offense Type.  Let's take a look:
+```{r Offense Type, echo=TRUE}
+# Plot by Incident Type
+table(Murder$offincident)
+ggplot(Murder[!(offincident %in% c("CAPITAL MURDER WHILE REMUNERATION","CRIMINAL NEGLIGENT HOMICIDE (DISTRACTED DRIVING"))]) +
+    geom_bar(aes(x = MonthDate)) + facet_wrap(~ offincident)
 ```
