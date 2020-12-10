@@ -46,21 +46,32 @@ Murder[,Date := as.Date(substr(date1,1,10))]
 
 # Add Dates and Incidents / Day & Month counts 
 Murder[,MonthDate := as.Date(paste0(format(Date,"%Y-%m"),"-01"))]
+Murder[,WeekNum := strftime(Date, format = "%V")]
+Murder <- merge(Murder,Murder[,head(.SD, 1L),.SDcols = "Date",by = c("servyr","WeekNum")],by = c("servyr","WeekNum"))
+setnames(Murder,old = c("Date.x","Date.y"),new = c("Date","WeekDate"))
+
 setorder(Murder,Date)
 
 Murder[,NumPerDay := .N,by = Date]
+Murder[,NumPerWeek := .N,by = WeekDate]
 Murder[,NumPerMonth := .N,by = MonthDate]
 
 ```
 
 
-Take a look at Murder rates over the last few years
+First let's smooth the data
 ```{r Smooth Data, echo = TRUE}
 # Smooth Murder Rates for plotting
 Murder[,SmoothNumPerDay := predict(smooth.spline(NumPerDay,df = 20))$y]
+Murder[,SmoothNumPerWeek := predict(smooth.spline(NumPerWeek,df = 55))$y]
 Murder[,SmoothNumPerMonth := predict(smooth.spline(NumPerMonth,df = 10))$y]
 
-# Plot Num of Murders per Month and Day
+
+```
+
+
+Now let's take a look at Murder Rates per Month over the last few years.
+``` {r Monthly Murder Rate, echo = TRUE}
 ggplot(Murder) +
     geom_line(aes(x = MonthDate,y = SmoothNumPerMonth,color = "red")) + 
     geom_point(data = Murder,aes(x = Date,y = NumPerMonth)) + 
@@ -70,6 +81,16 @@ ggplot(Murder) +
                         labels = c('Per Day','Per Month'))
 
 ```
-
 Yes - it definitely looks like there's an uptick in the last few months of 2020!
+
+
+Let's take a look at the same data, but bin it by week instead of month:
+```{r Weekly Murder Rate, echo = TRUE}
+ggplot(Murder) +
+    geom_point(aes(x = WeekDate,y = NumPerWeek)) + 
+    geom_line(aes(x = WeekDate,y = SmoothNumPerWeek),color = "red") +
+    ggtitle("Murder Rates per Week") + ylab("# Murders")
+```
+
+The rates look even worse when binned by week - because a few incidents were concentrated?
 
