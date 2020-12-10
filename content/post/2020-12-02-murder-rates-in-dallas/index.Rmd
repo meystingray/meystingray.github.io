@@ -58,7 +58,7 @@ Murder[,NumPerMonth := .N,by = MonthDate]
 ```
 
 
-First let's smooth the data
+First let's smooth the rates per day, week, month...
 ```{r Smooth Data, echo = TRUE}
 # Smooth Murder Rates for plotting
 Murder[,SmoothNumPerDay := predict(smooth.spline(NumPerDay,df = 20))$y]
@@ -88,14 +88,17 @@ ggplot(Murder) +
     geom_point(aes(x = WeekDate,y = NumPerWeek)) + 
     geom_line(aes(x = WeekDate,y = SmoothNumPerWeek),color = "red") +
     ggtitle("Murder Rates per Week") + ylab("# Murders")
+```
 
-# The rates look even worse when binned by week - because a few incidents were concentrated?
+The rates look even worse when binned by week - because a few incidents were concentrated?
 
+```{r Recent Murder Rate, echo = TRUE}
 ggplot(Murder[Date >= as.Date("2020-06-01"),]) +
     geom_point(aes(x = Date,y = NumPerDay)) + 
     geom_line(aes(x = WeekDate,y = SmoothNumPerDay),color = "red") +
     ggtitle("Murder Rates per Day") + ylab("# Murders")
 ```
+
 It looks like there's been several days of 3 murders/day recently, which is the spike in the weekly chart.
 
 Let's look at just 2020
