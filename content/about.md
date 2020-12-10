@@ -5,7 +5,7 @@ date: '2020-12-02'
 
 This is the personal website of Sean Conroy.
 
-![This is me](./images/IMG_6575.png "Not working")
+<img src="/./about_files/IMG_6575.png" alt="picture of me" width="400px"/>
 
 My interests are in applying statistics and machine learning to big hairy problems, and seeing if anything sticks.
 
