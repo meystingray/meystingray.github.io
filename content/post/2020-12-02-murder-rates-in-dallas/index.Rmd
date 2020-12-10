@@ -3,11 +3,10 @@ title: Murder Rates in Dallas
 author: Sean Conroy
 date: '2020-12-02'
 slug: murder-rates-in-dallas
-categories: []
+categories:
+  - Dallas-Police-Data
 tags: []
 ---
-
-
 
 ```{r setup, include=FALSE}
 
@@ -21,15 +20,15 @@ library(ggplot2)
 ## Dallas Murder Rate
 
 Based on the following data set from Dallas Open Data: <https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7>
-
-
+    
+    
 Data refresh date:
 ```{r printDate, echo = FALSE}
 print(Sys.Date())
 ```
 
 Load data directly from DallasOpenData using Socrata API:
-```{r LoadData, echo = TRUE}
+    ```{r LoadData, echo = TRUE}
 
 #PI <- read.socrata("https://www.dallasopendata.com/resource/qv6i-rri7.csv")
 #PI <- readRDS("C:/Users/sconroy/Desktop/Debug/PoliceIncidents.RDS")
@@ -85,12 +84,10 @@ Yes - it definitely looks like there's an uptick in the last few months of 2020!
 
 
 Let's take a look at the same data, but bin it by week instead of month:
-```{r Weekly Murder Rate, echo = TRUE}
+    ```{r Weekly Murder Rate, echo = TRUE}
 ggplot(Murder) +
     geom_point(aes(x = WeekDate,y = NumPerWeek)) + 
     geom_line(aes(x = WeekDate,y = SmoothNumPerWeek),color = "red") +
     ggtitle("Murder Rates per Week") + ylab("# Murders")
 ```
-
 The rates look even worse when binned by week - because a few incidents were concentrated?
-
