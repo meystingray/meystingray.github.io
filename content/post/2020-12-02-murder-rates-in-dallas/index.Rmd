@@ -180,7 +180,7 @@ ggplot(Murder,aes(x = compsex)) + geom_bar() + facet_wrap(~ servyr) +
 
 ```
 
-Appears that the 2020 is unusually skewed toward men being the victims.
+It appears that 2020 is unusually skewed toward male victims.
 
 Putting this all together, let's see if we can find the Age, Race and Gender classifications for victims that have the most significant changes over the last few years.
 ```{r Increase Per Year Per community, echo=TRUE}
@@ -192,4 +192,5 @@ ggplot(Murder[comprace == "White" & compsex == "Male" & compage >= 30,],aes(x = 
 ggplot(Murder[comprace == "Hispanic or Latino" & compsex == "Male" & compage < 30,],aes(x = servyr)) + geom_bar() + ggtitle("Murder Rate Per Year: Hispanic Males Under 30")
 ggplot(Murder[comprace == "Hispanic or Latino" & compsex == "Male" & compage >= 30,],aes(x = servyr)) + geom_bar() + ggtitle("Murder Rate Per Year: Hispanic Males Over 30")
 ```
+
 We see a significant increase in murders for White and Hispanic Males over 30 and a significant decrease in white males under 30.

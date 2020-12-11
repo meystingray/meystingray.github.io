@@ -17,7 +17,7 @@ tags: []
 <p>Based on the following data set from Dallas Open Data:
 <a href="https://www.dallasopendata.com/Public-Safety/Public-Safety-Police-Incidents/yn72-daik" class="uri">https://www.dallasopendata.com/Public-Safety/Public-Safety-Police-Incidents/yn72-daik</a></p>
 <p>Data refresh date:</p>
-<pre><code>## [1] &quot;2020-12-10&quot;</code></pre>
+<pre><code>## [1] &quot;2020-12-11&quot;</code></pre>
 <p>Load data directly from DallasOpenData using Socrata API:</p>
 <pre class="r"><code>#PI &lt;- read.socrata(&quot;https://www.dallasopendata.com/resource/qv6i-rri7.csv&quot;)
 #PI &lt;- readRDS(&quot;C:/Users/sconroy/Desktop/Debug/PoliceIncidents.RDS&quot;)
@@ -135,7 +135,7 @@ ggplot(Murder,aes(x = compsex)) + geom_bar() + facet_wrap(~ servyr) +
                   vjust = -0.25) +
     ggtitle(&quot;Murder Rate per Sex&quot;)</code></pre>
 <p><img src="index_files/figure-html/Per%20Victim%20Sex%20Distribution-1.png" width="672" /></p>
-<p>Appears that the 2020 is unusually skewed toward men being the victims.</p>
+<p>It appears that 2020 is unusually skewed toward male victims.</p>
 <p>Putting this all together, let’s see if we can find the Age, Race and Gender classifications for victims that have the most significant changes over the last few years.</p>
 <pre class="r"><code>ggplot(Murder[comprace == &quot;Black&quot; &amp; compsex == &quot;Male&quot; &amp; compage &lt; 30,],aes(x = servyr)) + geom_bar() + ggtitle(&quot;Murder Rate Per Year: Black Males Under 30&quot;)</code></pre>
 <p><img src="index_files/figure-html/Increase%20Per%20Year%20Per%20community-1.png" width="672" /></p>
@@ -150,6 +150,6 @@ ggplot(Murder,aes(x = compsex)) + geom_bar() + facet_wrap(~ servyr) +
 <pre class="r"><code>ggplot(Murder[comprace == &quot;Hispanic or Latino&quot; &amp; compsex == &quot;Male&quot; &amp; compage &lt; 30,],aes(x = servyr)) + geom_bar() + ggtitle(&quot;Murder Rate Per Year: Hispanic Males Under 30&quot;)</code></pre>
 <p><img src="index_files/figure-html/Increase%20Per%20Year%20Per%20community-6.png" width="672" /></p>
 <pre class="r"><code>ggplot(Murder[comprace == &quot;Hispanic or Latino&quot; &amp; compsex == &quot;Male&quot; &amp; compage &gt;= 30,],aes(x = servyr)) + geom_bar() + ggtitle(&quot;Murder Rate Per Year: Hispanic Males Over 30&quot;)</code></pre>
-<p><img src="index_files/figure-html/Increase%20Per%20Year%20Per%20community-7.png" width="672" />
-We see a significant increase in murders for White and Hispanic Males over 30 and a significant decrease in white males under 30.</p>
+<p><img src="index_files/figure-html/Increase%20Per%20Year%20Per%20community-7.png" width="672" /></p>
+<p>We see a significant increase in murders for White and Hispanic Males over 30 and a significant decrease in white males under 30.</p>
 </div>
