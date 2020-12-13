@@ -31,17 +31,17 @@ print(Sys.Date())
 Load data directly from DallasOpenData using Socrata API:
 ```{r LoadData, echo = TRUE}
 
-#PI <- read.socrata("https://www.dallasopendata.com/resource/qv6i-rri7.csv")
+PI <- read.socrata("https://www.dallasopendata.com/resource/qv6i-rri7.csv")
 #PI <- readRDS("C:/Users/sconroy/Desktop/Debug/PoliceIncidents.RDS")
-#setDT(PI)
+setDT(PI)
 
 ```
 
 
 First, let's extract murder incidents by looking for "MURDER" or "HOMICIDE" in the officer's incident description.
 ```{r Extract Murders, echo = TRUE}
-Murder <- readRDS("C:/Users/sconroy/Desktop/Debug/Murder.RDS")
-#Murder <- PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident),]
+
+Murder <- PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident),]
 Murder[,Date := as.Date(substr(date1,1,10))]
 
 # Add Dates and Incidents / Day & Month counts 
@@ -65,7 +65,6 @@ First let's smooth the rates per day, week, month...
 Murder[,SmoothNumPerDay := predict(smooth.spline(NumPerDay,df = 20))$y]
 Murder[,SmoothNumPerWeek := predict(smooth.spline(NumPerWeek,df = 55))$y]
 Murder[,SmoothNumPerMonth := predict(smooth.spline(NumPerMonth,df = 10))$y]
-
 
 ```
 

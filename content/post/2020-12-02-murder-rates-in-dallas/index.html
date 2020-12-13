@@ -17,14 +17,13 @@ tags: []
 <p>Based on the following data set from Dallas Open Data:
 <a href="https://www.dallasopendata.com/Public-Safety/Public-Safety-Police-Incidents/yn72-daik" class="uri">https://www.dallasopendata.com/Public-Safety/Public-Safety-Police-Incidents/yn72-daik</a></p>
 <p>Data refresh date:</p>
-<pre><code>## [1] &quot;2020-12-11&quot;</code></pre>
+<pre><code>## [1] &quot;2020-12-13&quot;</code></pre>
 <p>Load data directly from DallasOpenData using Socrata API:</p>
-<pre class="r"><code>#PI &lt;- read.socrata(&quot;https://www.dallasopendata.com/resource/qv6i-rri7.csv&quot;)
+<pre class="r"><code>PI &lt;- read.socrata(&quot;https://www.dallasopendata.com/resource/qv6i-rri7.csv&quot;)
 #PI &lt;- readRDS(&quot;C:/Users/sconroy/Desktop/Debug/PoliceIncidents.RDS&quot;)
-#setDT(PI)</code></pre>
+setDT(PI)</code></pre>
 <p>First, let’s extract murder incidents by looking for “MURDER” or “HOMICIDE” in the officer’s incident description.</p>
-<pre class="r"><code>Murder &lt;- readRDS(&quot;C:/Users/sconroy/Desktop/Debug/Murder.RDS&quot;)
-#Murder &lt;- PI[grepl(&quot;MURDER&quot;,offincident) | grepl(&quot;HOMICIDE&quot;,offincident),]
+<pre class="r"><code>Murder &lt;- PI[grepl(&quot;MURDER&quot;,offincident) | grepl(&quot;HOMICIDE&quot;,offincident),]
 Murder[,Date := as.Date(substr(date1,1,10))]
 
 # Add Dates and Incidents / Day &amp; Month counts 
@@ -76,13 +75,13 @@ Murder[,SmoothNumPerMonth := predict(smooth.spline(NumPerMonth,df = 10))$y]</cod
 table(Murder$offincident)</code></pre>
 <pre><code>## 
 ##                 CAPITAL MURDER BY TERROR THREAT 
-##                                             120 
+##                                             125 
 ##              CAPITAL MURDER OF MULTIPLE PERSONS 
-##                                              33 
+##                                              37 
 ##               CAPITAL MURDER WHILE REMUNERATION 
 ##                                               1 
 ##                     CRIMINAL NEGLIGENT HOMICIDE 
-##                                             106 
+##                                             108 
 ## CRIMINAL NEGLIGENT HOMICIDE (DISTRACTED DRIVING 
 ##                                               2 
 ##                                        HOMICIDE 
@@ -90,7 +89,7 @@ table(Murder$offincident)</code></pre>
 ##                      HOMICIDE (POLICE SHOOTING) 
 ##                                               7 
 ##                                          MURDER 
-##                                             471</code></pre>
+##                                             470</code></pre>
 <pre class="r"><code>ggplot(Murder[!(offincident %in% c(&quot;CAPITAL MURDER WHILE REMUNERATION&quot;,
                                    &quot;CRIMINAL NEGLIGENT HOMICIDE (DISTRACTED DRIVING&quot;))]) +
     geom_bar(aes(x = MonthDate)) + facet_wrap(~ offincident)</code></pre>
@@ -121,7 +120,7 @@ ggplot(Murder,aes(x = Shift)) + geom_bar() +
 <p>Most murders occur between 11pm and 7am. No suprises there.</p>
 <p>Age distribution of victims per year:</p>
 <pre class="r"><code>ggplot(Murder,aes(x = compage)) + geom_histogram(bins = 10) + facet_wrap(~ servyr)</code></pre>
-<pre><code>## Warning: Removed 24 rows containing non-finite values (stat_bin).</code></pre>
+<pre><code>## Warning: Removed 23 rows containing non-finite values (stat_bin).</code></pre>
 <p><img src="index_files/figure-html/Per%20Victim%20Age%20Distribution-1.png" width="672" />
 Looks like the ages of the victimes are left-skewed towards younger victims, peaking in the 20’s.</p>
 <p>Sex distrbution of victims:</p>
