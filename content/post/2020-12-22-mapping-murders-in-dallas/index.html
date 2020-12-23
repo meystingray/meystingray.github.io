@@ -1,0 +1,256 @@
+---
+title: Mapping Murders in Dallas
+author: Sean Conroy
+date: '2020-12-22'
+slug: mapping-murders-in-dallas
+categories:
+  - Dallas-Police-Data
+tags: []
+---
+
+<link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="index_files/anchor-sections/anchor-sections.js"></script>
+
+
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:data.table&#39;:
+## 
+##     between, first, last</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre><code>##      LatLongStart LatLongEnd               LatLong Latitude Longitude
+##   1:           38         58 32.748352, -96.693043 32.74835 -96.69304
+##   2:           49         69 32.698389, -96.759851 32.69839 -96.75985
+##   3:           39         59 32.647695, -96.844527 32.64769 -96.84453
+##   4:           35         55 32.783923, -96.842992 32.78392 -96.84299
+##   5:           37         57 32.744877, -96.759385 32.74488 -96.75938
+##  ---                                                                 
+## 761:           37         56  32.996168, -96.82903 32.99617 -96.82903
+## 762:            0         -2                             NA        NA
+## 763:           32         52 32.871642, -96.764751 32.87164 -96.76475
+## 764:           41         61 32.801438, -96.805686 32.80144 -96.80569
+## 765:           37         57 32.795868, -96.725309 32.79587 -96.72531</code></pre>
+<pre><code>## Warning: Removed 57 rows containing missing values (geom_point).</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<pre><code>## Google&#39;s Terms of Service: https://cloud.google.com/maps-platform/terms/.</code></pre>
+<pre><code>## Please cite ggmap if you use it! See citation(&quot;ggmap&quot;) for details.</code></pre>
+<pre><code>## Source : https://maps.googleapis.com/maps/api/staticmap?center=Dallas&amp;zoom=11&amp;size=640x640&amp;scale=2&amp;maptype=terrain&amp;language=en-EN&amp;key=xxx-uE</code></pre>
+<pre><code>## Source : https://maps.googleapis.com/maps/api/geocode/json?address=Dallas&amp;key=xxx-uE</code></pre>
+<pre><code>## Warning: Removed 57 rows containing missing values (geom_point).</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-1-2.png" width="672" /></p>
+<pre><code>## Warning: Removed 7 rows containing missing values (geom_point).</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-1-3.png" width="672" /></p>
+<pre><code>##    Latitude Longitude
+## 1  32.73555 -96.76344
+## 2  32.74015 -96.68473
+## 3  32.80380 -96.70189
+## 4  32.70926 -96.90568
+## 5  32.76709 -96.85659
+## 6  32.77469 -96.78547
+## 7  32.90404 -96.73502
+## 8  32.97418 -96.82240
+## 9  32.86280 -96.86694
+## 10 32.70038 -96.82083</code></pre>
+<pre><code>## Warning: Removed 7 rows containing missing values (geom_point).</code></pre>
+<pre><code>## Warning: Removed 1 rows containing missing values (geom_point).</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-1-4.png" width="672" /></p>
+<pre><code>## Warning: Removed 6 rows containing missing values (geom_point).</code></pre>
+<pre><code>## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).</code></pre>
+<pre><code>## Warning: Removed 10 rows containing missing values (geom_point).
+
+## Warning: Removed 10 rows containing missing values (geom_point).
+
+## Warning: Removed 10 rows containing missing values (geom_point).
+
+## Warning: Removed 10 rows containing missing values (geom_point).
+
+## Warning: Removed 10 rows containing missing values (geom_point).
+
+## Warning: Removed 10 rows containing missing values (geom_point).
+
+## Warning: Removed 10 rows containing missing values (geom_point).
+
+## Warning: Removed 10 rows containing missing values (geom_point).
+
+## Warning: Removed 10 rows containing missing values (geom_point).
+
+## Warning: Removed 10 rows containing missing values (geom_point).
+
+## Warning: Removed 10 rows containing missing values (geom_point).
+
+## Warning: Removed 10 rows containing missing values (geom_point).
+
+## Warning: Removed 10 rows containing missing values (geom_point).
+
+## Warning: Removed 10 rows containing missing values (geom_point).
+
+## Warning: Removed 10 rows containing missing values (geom_point).</code></pre>
+<pre><code>## Warning: Removed 12 rows containing missing values (geom_point).
+
+## Warning: Removed 12 rows containing missing values (geom_point).
+
+## Warning: Removed 12 rows containing missing values (geom_point).
+
+## Warning: Removed 12 rows containing missing values (geom_point).
+
+## Warning: Removed 12 rows containing missing values (geom_point).
+
+## Warning: Removed 12 rows containing missing values (geom_point).
+
+## Warning: Removed 12 rows containing missing values (geom_point).
+
+## Warning: Removed 12 rows containing missing values (geom_point).
+
+## Warning: Removed 12 rows containing missing values (geom_point).
+
+## Warning: Removed 12 rows containing missing values (geom_point).
+
+## Warning: Removed 12 rows containing missing values (geom_point).
+
+## Warning: Removed 12 rows containing missing values (geom_point).
+
+## Warning: Removed 12 rows containing missing values (geom_point).
+
+## Warning: Removed 12 rows containing missing values (geom_point).
+
+## Warning: Removed 12 rows containing missing values (geom_point).</code></pre>
+<pre><code>## Warning: Removed 8 rows containing missing values (geom_point).
+
+## Warning: Removed 8 rows containing missing values (geom_point).
+
+## Warning: Removed 8 rows containing missing values (geom_point).
+
+## Warning: Removed 8 rows containing missing values (geom_point).
+
+## Warning: Removed 8 rows containing missing values (geom_point).
+
+## Warning: Removed 8 rows containing missing values (geom_point).
+
+## Warning: Removed 8 rows containing missing values (geom_point).
+
+## Warning: Removed 8 rows containing missing values (geom_point).
+
+## Warning: Removed 8 rows containing missing values (geom_point).
+
+## Warning: Removed 8 rows containing missing values (geom_point).
+
+## Warning: Removed 8 rows containing missing values (geom_point).
+
+## Warning: Removed 8 rows containing missing values (geom_point).
+
+## Warning: Removed 8 rows containing missing values (geom_point).
+
+## Warning: Removed 8 rows containing missing values (geom_point).</code></pre>
+<pre><code>## Warning: Removed 11 rows containing missing values (geom_point).
+
+## Warning: Removed 11 rows containing missing values (geom_point).
+
+## Warning: Removed 11 rows containing missing values (geom_point).
+
+## Warning: Removed 11 rows containing missing values (geom_point).
+
+## Warning: Removed 11 rows containing missing values (geom_point).
+
+## Warning: Removed 11 rows containing missing values (geom_point).
+
+## Warning: Removed 11 rows containing missing values (geom_point).
+
+## Warning: Removed 11 rows containing missing values (geom_point).
+
+## Warning: Removed 11 rows containing missing values (geom_point).
+
+## Warning: Removed 11 rows containing missing values (geom_point).
+
+## Warning: Removed 11 rows containing missing values (geom_point).
+
+## Warning: Removed 11 rows containing missing values (geom_point).
+
+## Warning: Removed 11 rows containing missing values (geom_point).
+
+## Warning: Removed 11 rows containing missing values (geom_point).</code></pre>
+<pre><code>## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).
+
+## Warning: Removed 6 rows containing missing values (geom_point).</code></pre>
+<pre><code>## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).
+
+## Warning: Removed 4 rows containing missing values (geom_point).</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.gif" /><!-- --></p>

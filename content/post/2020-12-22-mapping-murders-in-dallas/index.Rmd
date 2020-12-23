@@ -1,0 +1,91 @@
+---
+title: Mapping Murders in Dallas
+author: Sean Conroy
+date: '2020-12-22'
+slug: mapping-murders-in-dallas
+categories:
+  - Dallas-Police-Data
+tags: []
+---
+
+
+```{r echo = FALSE}
+library(data.table)
+library(ggplot2)
+library(stringr)
+library(RSocrata)
+library(dplyr)
+library(gganimate)
+
+#PI <- read.socrata("https://www.dallasopendata.com/resource/qv6i-rri7.csv")
+#saveRDS(PI,file = "C:/Users/sconroy/Desktop/Debug/PoliceIncidents12-17-20.RDS")
+#setDT(PI)
+ 
+#Murder <- PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident),]
+Murder <- readRDS("C:/Users/sconroy/Desktop/Debug/Murder.RDS")
+
+
+# Extract Lat / Long frm geocoded column
+Murder[,rowid := 1:.N]
+Murder[,Date := as.Date(substr(date1,1,10))]
+Murder[,LatLongStart := regexpr("(",geocoded_column,fixed = TRUE)[1] + 1,by = rowid]
+Murder[,LatLongEnd := regexpr(")",geocoded_column,fixed = TRUE)[1] - 1,by = rowid]
+Murder[,LatLong := substr(geocoded_column,start = LatLongStart,stop = LatLongEnd)]
+Murder[,LatLongComma := regexpr(",",LatLong,fixed = TRUE)[1],by = rowid]
+Murder[,Latitude := substr(LatLong,start = 1,stop = LatLongComma - 1)]
+Murder[,Longitude := substr(LatLong,start = LatLongComma + 1,stop = 1000)]
+Murder[,Longitude := as.numeric(Longitude)]
+Murder[,Latitude := as.numeric(Latitude)]
+Murder[,.(LatLongStart,LatLongEnd,LatLong,Latitude,Longitude)]
+
+# Shootings by Year on Map
+ggplot(Murder) + geom_point(aes(x = Longitude,y = Latitude,color = signal)) + facet_wrap(~ servyr) + ylab(NULL)
+#ggplot(Murder[signal == "19 - SHOOTING",]) + geom_point(aes(x = Longitude,y = Latitude)) + facet_wrap(~ servyr) + ylab(NULL)
+
+# Load our API key for Google
+library(ggmap)
+apiKey <- fread("C:/Users/sconroy/Documents/DallasPoliceData/APIkey.key")
+apiKey <- names(apiKey)
+register_google(key = apiKey)
+
+# Get map of Dallas from Google API
+#DallasMapZoom10 <- get_map(location = "Dallas", zoom = 10, source = "google")
+DallasMapZoom11 <- get_map(location = "Dallas", zoom = 11, source = "google")
+#DallasMapZoom12 <- get_map(location = "Dallas", zoom = 12, source = "google")
+
+
+# Let's take a look at the shootings on a map for each year.
+ggmap(DallasMapZoom11,extent = "normal") + 
+    geom_point(data = Murder, aes(x = Longitude, y = Latitude), size = 1) + facet_wrap(~ servyr)
+
+# Let's take a look at the shootings just for 2020.
+ggmap(DallasMapZoom11,extent = "device") + 
+    geom_point(data = Murder[Date > as.Date("2020-01-01"),], aes(x = Longitude, y = Latitude), 
+               shape = 21, colour = "black", fill = "yellow", size = 3, stroke = 2)
+
+
+# Try to do Cluster Analysis
+Murders2020 <- Murder[Date > as.Date("2020-01-01"),]
+KM <- kmeans(Murders2020[!is.na(Latitude) & !is.na(Longitude),.(Latitude,Longitude)],centers = 10)
+KM$centers
+
+# Plot the clusters
+ggmap(DallasMapZoom11,extent = "device") + 
+    geom_point(data = Murder[Date > as.Date("2020-01-01"),], aes(x = Longitude, y = Latitude), 
+               colour = "black", fill = "black", size = 2) + 
+    geom_point(data = as.data.frame(KM$centers), aes(x = Longitude, y = Latitude), 
+               shape = 21, colour = "red", fill = "yellow", size = 40, stroke = 2,alpha = 0.3)
+
+
+p <- ggmap(DallasMapZoom11,extent = "normal") +
+    geom_point(data = Murder, aes(x = Longitude, y = Latitude,group = seq_along(servyr)), size = 1)
+
+anim <- p + transition_states(servyr,
+                              transition_length = 1,
+                              state_length = 1)# + ease_aes()
+
+
+anim <- anim + ggtitle('Now showing {closest_state}') #,subtitle = 'Frame {frame} of {nframes}')
+    
+animate(anim,renderer = gifski_renderer())
+```

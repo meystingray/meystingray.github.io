@@ -32,7 +32,6 @@ Load data directly from DallasOpenData using Socrata API:
 ```{r LoadData, echo = TRUE}
 
 PI <- read.socrata("https://www.dallasopendata.com/resource/qv6i-rri7.csv")
-#PI <- readRDS("C:/Users/sconroy/Desktop/Debug/PoliceIncidents.RDS")
 setDT(PI)
 
 ```
@@ -72,12 +71,13 @@ Murder[,SmoothNumPerMonth := predict(smooth.spline(NumPerMonth,df = 10))$y]
 Now let's take a look at Murder Rates per Month over the last few years.
 ``` {r Monthly Murder Rate, echo = TRUE}
 ggplot(Murder) +
-    geom_line(aes(x = MonthDate,y = SmoothNumPerMonth,color = "red")) + 
+    geom_line(aes(x = MonthDate,y = SmoothNumPerMonth,color = "red"),size = 1) + 
     geom_point(data = Murder,aes(x = Date,y = NumPerMonth)) + 
     geom_line(aes(x = Date,y = SmoothNumPerDay,color = "blue")) +
-    ggtitle("Murder Rates") + ylab("# Murders") + 
+    ggtitle("Dallas Murder Rates since 2014") + ylab("# Murders") + 
     scale_colour_manual(name = '',values = c('blue'='blue','red'='red'),
-                        labels = c('Per Day','Per Month'))
+                        labels = c('Per Day','Per Month')) + 
+    theme(legend.position = "top",plot.title = element_text(hjust = 0.5))
 
 ```
 
