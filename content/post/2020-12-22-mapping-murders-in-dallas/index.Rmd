@@ -10,7 +10,7 @@ tags: []
 
 
 ```{r Load Library, echo = FALSE}
-pkg <- c("data.table","ggplot2","stringr","dplyr","gganimate","RSocrata")
+pkg <- c("data.table","ggplot2","stringr","dplyr","gganimate","RSocrata","ggmap")
 suppressWarnings(suppressPackageStartupMessages(
     invisible(lapply(pkg, function(x) require(x, character.only = T, quietly = T)))
 ))
@@ -43,16 +43,18 @@ MurderWithLatLong <- Murder[!is.na(Latitude) & !is.na(Longitude),]
 
 ```
 
-```{r Load GoogleMap, echo = FALSE}
+```{r Load GoogleMap, echo = FALSE,message=FALSE}
 # Load our API key for Google
-library(ggmap)
+
 apiKey <- fread("C:/Users/sconroy/Documents/DallasPoliceData/APIkey.key")
 apiKey <- names(apiKey)
 register_google(key = apiKey)
 
 # Get map of Dallas from Google API
 #DallasMapZoom10 <- get_map(location = "Dallas", zoom = 10, source = "google")
-DallasMapZoom11 <- get_map(location = "Dallas", zoom = 11, source = "google")
+DallasMapZoom11 <- invisible(get_map(
+    location = "Dallas", zoom = 11, maptype = "roadmap",source = "google",messaging = FALSE
+    ))
 #DallasMapZoom12 <- get_map(location = "Dallas", zoom = 12, source = "google")
 ```
 
@@ -101,4 +103,9 @@ anim <- p + transition_states(servyr,
 anim <- anim + ggtitle('Now showing {closest_state}') #,subtitle = 'Frame {frame} of {nframes}')
     
 animate(anim,renderer = gifski_renderer())
+```
+
+
+```{r Citation, echo = FALSE}
+citation("ggmap")
 ```
