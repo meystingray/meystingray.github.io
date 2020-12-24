@@ -65,13 +65,15 @@ ggmap(DallasMapZoom11,extent = "normal") +
     geom_point(data = MurderWithLatLong, aes(x = Longitude, y = Latitude), size = 1) + facet_wrap(~ servyr)
 
 # Let's take a look at the shootings just for 2020.
-ggmap(DallasMapZoom11,extent = "device") + 
-    geom_point(data = MurderWithLatLong[Date > as.Date("2020-01-01"),], aes(x = Longitude, y = Latitude), 
+suppressWarnings(
+    ggmap(DallasMapZoom11,extent = "device") + 
+        geom_point(data = MurderWithLatLong[Date > as.Date("2020-01-01"),], aes(x = Longitude, y = Latitude), 
                shape = 21, colour = "black", fill = "yellow", size = 3, stroke = 2)
+)
 
 ```
 
-
+Cluster analysis
 ```{r Cluster Analysis, echo = FALSE}
 # Try to do Cluster Analysis
 Murders2020 <- MurderWithLatLong[Date > as.Date("2020-01-01"),]
@@ -79,21 +81,22 @@ KM <- kmeans(Murders2020[!is.na(Latitude) & !is.na(Longitude),.(Latitude,Longitu
 #KM$centers
 
 # Plot the clusters
-ggmap(DallasMapZoom11,extent = "device") + 
-    geom_point(data = MurderWithLatLong[Date > as.Date("2020-01-01"),], aes(x = Longitude, y = Latitude), 
-               colour = "black", fill = "black", size = 2) + 
+suppressWarnings(
+    ggmap(DallasMapZoom11,extent = "device") + 
+        geom_point(data = MurderWithLatLong[Date > as.Date("2020-01-01"),], aes(x = Longitude, y = Latitude), 
+           colour = "black", fill = "black", size = 2) + 
     geom_point(data = as.data.frame(KM$centers), aes(x = Longitude, y = Latitude), 
-               shape = 21, colour = "red", fill = "yellow", size = 40, stroke = 2,alpha = 0.3)
+               shape = 21, colour = "red", fill = "yellow", size = 30, stroke = 2,alpha = 0.3)
 
-
+)
 ```
 
 
 ```{r Plot the anmination, echo = FALSE}
 
-
 p <- ggmap(DallasMapZoom11,extent = "normal") +
-    geom_point(data = MurderWithLatLong, aes(x = Longitude, y = Latitude,group = seq_along(servyr)), size = 1)
+    geom_point(data = Murder, aes(x = Longitude, y = Latitude,group = seq_along(servyr)), 
+               size = 2,shape = 21,color = "black",fill = "red",stroke = 1)
 
 anim <- p + transition_states(servyr,
                               transition_length = 1,
@@ -105,7 +108,6 @@ anim <- anim + ggtitle('Now showing {closest_state}') #,subtitle = 'Frame {frame
 animate(anim,renderer = gifski_renderer())
 ```
 
-
-```{r Citation, echo = FALSE}
-citation("ggmap")
-```
+ggmap citation:
+D. Kahle and H. Wickham. ggmap: Spatial Visualization with ggplot2. The R Journal, 5(1), 144-161.
+URL http://journal.r-project.org/archive/2013-1/kahle-wickham.pdf
