@@ -95,17 +95,17 @@ suppressWarnings(
 ```{r Plot the anmination, echo = FALSE}
 
 p <- ggmap(DallasMapZoom11,extent = "normal") +
-    geom_point(data = Murder, aes(x = Longitude, y = Latitude,group = seq_along(servyr)), 
+    geom_point(data = MurderWithLatLong, aes(x = Longitude, y = Latitude,group = seq_along(servyr)), 
                size = 2,shape = 21,color = "black",fill = "red",stroke = 1)
 
 anim <- p + transition_states(servyr,
                               transition_length = 1,
-                              state_length = 1)# + ease_aes()
+                              state_length = 2)# + ease_aes()
 
 
 anim <- anim + ggtitle('Now showing {closest_state}') #,subtitle = 'Frame {frame} of {nframes}')
     
-animate(anim,renderer = gifski_renderer())
+animate(anim,renderer = gifski_renderer(), height = 600, width = 600)
 ```
 
 ggmap citation:
