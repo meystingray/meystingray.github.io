@@ -58,13 +58,22 @@ DallasMapZoom11 <- invisible(get_map(
 #DallasMapZoom12 <- get_map(location = "Dallas", zoom = 12, source = "google")
 ```
 
-
+Let's take a look at the Dallas murders on a map for each year.
 ```{r Plot Using the Maps, echo = FALSE}
-# Let's take a look at the shootings on a map for each year.
 ggmap(DallasMapZoom11,extent = "normal") + 
-    geom_point(data = MurderWithLatLong, aes(x = Longitude, y = Latitude), size = 1) + facet_wrap(~ servyr)
+    geom_point(data = MurderWithLatLong, aes(x = Longitude, y = Latitude), size = 1,color = "brown") +
+    theme(axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks.y=element_blank()) +
+    facet_grid(. ~ servyr) + ggtitle("Dallas Murders by Year")
+```
 
-# Let's take a look at the shootings just for 2020.
+
+Let's take a look at the murders just for 2020.
+```{r 2020Only, echo = FALSE}
 suppressWarnings(
     ggmap(DallasMapZoom11,extent = "device") + 
         geom_point(data = MurderWithLatLong[Date > as.Date("2020-01-01"),], aes(x = Longitude, y = Latitude), 
@@ -108,6 +117,6 @@ anim <- anim + ggtitle('Now showing {closest_state}') #,subtitle = 'Frame {frame
 animate(anim,renderer = gifski_renderer(), height = 600, width = 600)
 ```
 
-ggmap citation:
+Package "ggmap" citation:
 D. Kahle and H. Wickham. ggmap: Spatial Visualization with ggplot2. The R Journal, 5(1), 144-161.
 URL http://journal.r-project.org/archive/2013-1/kahle-wickham.pdf
