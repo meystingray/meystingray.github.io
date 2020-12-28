@@ -35,15 +35,15 @@ Murder[,Longitude := substr(LatLong,start = LatLongComma + 1,stop = 1000)]
 Murder[,Longitude := as.numeric(Longitude)]
 Murder[,Latitude := as.numeric(Latitude)]
 #Murder[,.(LatLongStart,LatLongEnd,LatLong,Latitude,Longitude)]
-MurderWithLatLong <- Murder[!is.na(Latitude) & !is.na(Longitude),]
-
+MurderWithLatLong <- Murder[!is.na(Latitude) & !is.na(Longitude),.(Date,Latitude,Longitude,servyr)]
+Murders2020 <- MurderWithLatLong[Date > as.Date("2020-01-01"),]
 # Shootings by Year on Map
 #ggplot(Murder) + geom_point(aes(x = Longitude,y = Latitude,color = signal)) + facet_wrap(~ servyr) + ylab(NULL)
 #ggplot(Murder[signal == "19 - SHOOTING",]) + geom_point(aes(x = Longitude,y = Latitude)) + facet_wrap(~ servyr) + ylab(NULL)
 
 ```
 
-```{r Load GoogleMap, echo = FALSE,message=FALSE}
+```{r Load GoogleMap, echo = FALSE,message = FALSE}
 # Load our API key for Google
 
 apiKey <- fread("C:/Users/sconroy/Documents/DallasPoliceData/APIkey.key")
@@ -59,7 +59,7 @@ DallasMapZoom11 <- invisible(get_map(
 ```
 
 Let's take a look at the Dallas murders on a map for each year.
-```{r Plot Using the Maps, echo = FALSE}
+```{r Plot Using the Maps, echo = FALSE,message = FALSE}
 ggmap(DallasMapZoom11,extent = "normal") + 
     geom_point(data = MurderWithLatLong, aes(x = Longitude, y = Latitude), size = 1,color = "brown") +
     theme(axis.title.x=element_blank(),
@@ -73,7 +73,8 @@ ggmap(DallasMapZoom11,extent = "normal") +
 
 
 Let's take a look at the murders just for 2020.
-```{r 2020Only, echo = FALSE}
+```{r 2020Only, echo = FALSE,message = FALSE}
+
 suppressWarnings(
     ggmap(DallasMapZoom11,extent = "device") + 
         geom_point(data = MurderWithLatLong[Date > as.Date("2020-01-01"),], aes(x = Longitude, y = Latitude), 
@@ -82,39 +83,41 @@ suppressWarnings(
 
 ```
 
-Cluster analysis
-```{r Cluster Analysis, echo = FALSE}
+Cluster analysis: what are the centers of the murder areas?  Let's try K-means with 10 clusters.
+```{r Cluster Analysis, echo = FALSE,message = FALSE}
+
 # Try to do Cluster Analysis
-Murders2020 <- MurderWithLatLong[Date > as.Date("2020-01-01"),]
 KM <- kmeans(Murders2020[!is.na(Latitude) & !is.na(Longitude),.(Latitude,Longitude)],centers = 10)
 #KM$centers
 
 # Plot the clusters
 suppressWarnings(
     ggmap(DallasMapZoom11,extent = "device") + 
-        geom_point(data = MurderWithLatLong[Date > as.Date("2020-01-01"),], aes(x = Longitude, y = Latitude), 
+        geom_point(data = Murders2020, aes(x = Longitude, y = Latitude), 
            colour = "black", fill = "black", size = 2) + 
     geom_point(data = as.data.frame(KM$centers), aes(x = Longitude, y = Latitude), 
                shape = 21, colour = "red", fill = "yellow", size = 30, stroke = 2,alpha = 0.3)
 
 )
+
 ```
 
 
-```{r Plot the anmination, echo = FALSE}
+```{r Plot the anmination, echo = FALSE,message = FALSE}
 
 p <- ggmap(DallasMapZoom11,extent = "normal") +
     geom_point(data = MurderWithLatLong, aes(x = Longitude, y = Latitude,group = seq_along(servyr)), 
                size = 2,shape = 21,color = "black",fill = "red",stroke = 1)
 
 anim <- p + transition_states(servyr,
-                              transition_length = 1,
-                              state_length = 2)# + ease_aes()
+                              transition_length = 0,
+                              state_length = 1)# + ease_aes()
 
 
 anim <- anim + ggtitle('Now showing {closest_state}') #,subtitle = 'Frame {frame} of {nframes}')
     
 animate(anim,renderer = gifski_renderer(), height = 600, width = 600)
+
 ```
 
 Package "ggmap" citation:
