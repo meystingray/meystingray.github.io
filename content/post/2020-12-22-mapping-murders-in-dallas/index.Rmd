@@ -34,9 +34,11 @@ Murder[,Latitude := substr(LatLong,start = 1,stop = LatLongComma - 1)]
 Murder[,Longitude := substr(LatLong,start = LatLongComma + 1,stop = 1000)]
 Murder[,Longitude := as.numeric(Longitude)]
 Murder[,Latitude := as.numeric(Latitude)]
-#Murder[,.(LatLongStart,LatLongEnd,LatLong,Latitude,Longitude)]
-MurderWithLatLong <- Murder[!is.na(Latitude) & !is.na(Longitude),.(Date,Latitude,Longitude,servyr)]
-Murders2020 <- MurderWithLatLong[Date > as.Date("2020-01-01"),]
+Murder[,Year := as.factor(servyr)]
+MurderWithLatLong <- Murder[!is.na(Latitude) & !is.na(Longitude) & !is.na(Date) & !is.na(servyr),
+                            .(Date,Longitude,Latitude,Year,servyr)]
+Murders2020 <- MurderWithLatLong[Date > as.Date("2020-01-01"),.(Date,Latitude,Longitude)]
+
 # Shootings by Year on Map
 #ggplot(Murder) + geom_point(aes(x = Longitude,y = Latitude,color = signal)) + facet_wrap(~ servyr) + ylab(NULL)
 #ggplot(Murder[signal == "19 - SHOOTING",]) + geom_point(aes(x = Longitude,y = Latitude)) + facet_wrap(~ servyr) + ylab(NULL)
@@ -50,12 +52,35 @@ apiKey <- fread("C:/Users/sconroy/Documents/DallasPoliceData/APIkey.key")
 apiKey <- names(apiKey)
 register_google(key = apiKey)
 
+# get Bounding Box for Data Set
+lats <- c(min(MurderWithLatLong$Latitude),max(MurderWithLatLong$Latitude))
+lons <- c(min(MurderWithLatLong$Longitude),max(MurderWithLatLong$Longitude))
+bb <- make_bbox(lon=lons,lat=lats,f=0.05)
+
+
 # Get map of Dallas from Google API
-#DallasMapZoom10 <- get_map(location = "Dallas", zoom = 10, source = "google")
-DallasMapZoom11 <- invisible(get_map(
-    location = "Dallas", zoom = 11, maptype = "roadmap",source = "google",messaging = FALSE
-    ))
+DallasMapZoom10 <- get_map(location = "Dallas", zoom = 10, maptype = "roadmap",source = "google",messaging = FALSE)
+DallasMapZoom11 <- get_map(location = bb, zoom = 11, maptype = "roadmap",source = "google",messaging = FALSE)
 #DallasMapZoom12 <- get_map(location = "Dallas", zoom = 12, source = "google")
+
+cda <- get_map(bb,maptype = "roadmap",source = "google")
+
+```
+
+
+All Dallas Murders since 2014, Color by Year
+```{r DallasAll, echo = FALSE,message = FALSE}
+ggmap(DallasMapZoom11,extent = "device") + 
+    geom_point(data = MurderWithLatLong, aes(x = Longitude, y = Latitude,fill = Year),
+               shape = 21, size = 2, stroke = 1,color = "blue") +
+    theme(axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks.y=element_blank()) +
+    ggtitle("Dallas Murders since 2014") + 
+    scale_fill_manual(values = c("black", "dark gray", "blue", "purple", "green","orange","red"))
 ```
 
 Let's take a look at the Dallas murders on a map for each year.
@@ -68,18 +93,33 @@ ggmap(DallasMapZoom11,extent = "normal") +
           axis.title.y=element_blank(),
           axis.text.y=element_blank(),
           axis.ticks.y=element_blank()) +
-    facet_grid(. ~ servyr) + ggtitle("Dallas Murders by Year")
+    facet_wrap(. ~ servyr) + ggtitle("Dallas Murders by Year")
 ```
 
 
 Let's take a look at the murders just for 2020.
 ```{r 2020Only, echo = FALSE,message = FALSE}
 
-suppressWarnings(
-    ggmap(DallasMapZoom11,extent = "device") + 
-        geom_point(data = MurderWithLatLong[Date > as.Date("2020-01-01"),], aes(x = Longitude, y = Latitude), 
-               shape = 21, colour = "black", fill = "yellow", size = 3, stroke = 2)
-)
+# suppressWarnings(
+#     ggmap(DallasMapZoom11,extent = "device") + 
+#         geom_point(data = MurderWithLatLong[Date > as.Date("2020-01-01"),], aes(x = Longitude, y = Latitude), 
+#                shape = 21, colour = "black", fill = "yellow", size = 3, stroke = 2)
+# )
+
+lats <- c(min(Murders2020$Latitude),max(Murders2020$Latitude))
+lons <- c(min(Murders2020$Longitude),max(Murders2020$Longitude))
+bb <- make_bbox(lon=lons,lat=lats,f=0.05)
+cda <- get_map(bb,zoom = 10,maptype = "roadmap",source = "google")
+ggmap(cda) + theme_bw() +
+    geom_point(data = Murders2020, aes(x = Longitude, y = Latitude), 
+               shape = 21, colour = "black", fill = "yellow", size = 3, stroke = 2) + 
+    theme(axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks.y=element_blank())
+
 
 ```
 
@@ -105,9 +145,15 @@ suppressWarnings(
 
 ```{r Plot the anmination, echo = FALSE,message = FALSE}
 
-p <- ggmap(DallasMapZoom11,extent = "normal") +
+p <- ggmap(DallasMapZoom11,extent = "device") +
     geom_point(data = MurderWithLatLong, aes(x = Longitude, y = Latitude,group = seq_along(servyr)), 
-               size = 2,shape = 21,color = "black",fill = "red",stroke = 1)
+               size = 2,shape = 21,color = "black",fill = "red",stroke = 1) +
+    theme(axis.title.x=element_blank(),
+          axis.text.x=element_blank(),
+          axis.ticks.x=element_blank(),
+          axis.title.y=element_blank(),
+          axis.text.y=element_blank(),
+          axis.ticks.y=element_blank())
 
 anim <- p + transition_states(servyr,
                               transition_length = 0,
