@@ -1,0 +1,10 @@
+name: shiny
+title:
+username:
+account: sean-conroy
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3434831
+bundleId: 4043146
+url: https://sean-conroy.shinyapps.io/shiny/
+when: 1609353025.76786
