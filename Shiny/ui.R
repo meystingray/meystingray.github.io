@@ -18,13 +18,14 @@ fluidPage(
         selectInput('color', 'Color', c('None', names(dataset))),
         
         selectInput('filterName', 'Filter By', c('None', names(dataset))),
+        uiOutput("filterValue"),
         #selectInput('filterValue', 'Filter Value', c('None', unique(dataset[,get(input.filterName)])),
         #uiOutput("filterValue"),
-        conditionalPanel(
-            condition = "input.filterName != 'None'",
-            selectInput("filterValue", "Filter Value",
-                        as.list(unique(dataset[,get(input.filterName)])))
-        ),
+        # conditionalPanel(
+        #     condition = "input.filterName != 'None'",
+        #     selectInput("filterValue", "Filter Value",
+        #                 as.list(unique(dataset[,get(input$filterName)])))
+        # ),
         
         #checkboxInput('jitter', 'Jitter'),
         #checkboxInput('smooth', 'Smooth'),
