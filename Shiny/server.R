@@ -4,8 +4,8 @@ suppressWarnings(suppressPackageStartupMessages(
 ))
 
 library(ggmap)
-token <- readRDS("droptoken.rds")
-drop_acc(dtoken = token)
+#token <- readRDS("droptoken.rds")
+#drop_acc(dtoken = token)
 
 function(input, output) {
     
