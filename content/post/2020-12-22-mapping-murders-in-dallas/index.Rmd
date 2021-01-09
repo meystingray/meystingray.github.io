@@ -8,13 +8,9 @@ categories:
 tags: []
 ---
 
-To explore the Dallas Murder data more yourself, check out my Shiny app here:
+To explore the Dallas Murder data more yourself, check out [my Shiny app here](https://sean-conroy.shinyapps.io/shinymurdermap/).
 
-https://sean-conroy.shinyapps.io/shinymurdermap/
-
-The code behind this blog post is here:
-
-https://github.com/meystingray/meystingray.github.io/blob/master/content/post/2020-12-02-murder-rates-in-dallas/index.Rmd
+The code behind this blog post is [on GitHub here](https://github.com/meystingray/meystingray.github.io/blob/master/content/post/2020-12-02-murder-rates-in-dallas/index.Rmd).
 
 
 ```{r Load Library, echo = FALSE}
