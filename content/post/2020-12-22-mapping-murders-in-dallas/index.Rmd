@@ -8,6 +8,9 @@ categories:
 tags: []
 ---
 
+To explore the Dallas Murder data more yourself, check out my Shiny app here: 
+https://sean-conroy.shinyapps.io/shinymurdermap/
+
 
 ```{r Load Library, echo = FALSE}
 pkg <- c("data.table","ggplot2","stringr","dplyr","gganimate","RSocrata","ggmap")
@@ -20,7 +23,7 @@ suppressWarnings(suppressPackageStartupMessages(
 #setDT(PI)
  
 #Murder <- PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident),]
-Murder <- readRDS("C:/Users/sconroy/Desktop/Debug/Murder.RDS")
+Murder <- readRDS("C:/Users/sconroy/Documents/DallasPoliceData/Murder.RDS")
 
 
 # Extract Lat / Long frm geocoded column
@@ -168,6 +171,8 @@ anim <- anim + ggtitle('Now showing {closest_state}') #,subtitle = 'Frame {frame
 animate(anim,renderer = gifski_renderer(), height = 600, width = 600)
 
 ```
+
+
 
 Package "ggmap" citation:
 D. Kahle and H. Wickham. ggmap: Spatial Visualization with ggplot2. The R Journal, 5(1), 144-161.

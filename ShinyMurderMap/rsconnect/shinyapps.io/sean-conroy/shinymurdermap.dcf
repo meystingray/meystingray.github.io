@@ -1,0 +1,10 @@
+name: shinymurdermap
+title:
+username:
+account: sean-conroy
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 3457054
+bundleId: 4076407
+url: https://sean-conroy.shinyapps.io/shinymurdermap/
+when: 1610215021.40957
