@@ -6,7 +6,7 @@ rsconnect::setAccountInfo(name='sean-conroy', token='2361581800547D60E6EE638B5B3
 setwd("C:/Users/sconroy/Documents/meystingray.github.io/ShinyMurderMap")
 library(shiny)
 library(rsconnect)
-runApp("C:/Users/sconroy/Documents/meystingray.github.io/ShinyMurderMap")
+runApp("C:/Users/sconroy/Documents/meystingray.github.io/ShinyMurdermap")
 rsconnect::deployApp("C:/Users/sconroy/Documents/meystingray.github.io/ShinyMurderMap")
 
 #library(rdrop2)
