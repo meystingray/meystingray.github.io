@@ -8,11 +8,11 @@ categories:
 tags: []
 ---
 
-To explore the Dallas Murder data more yourself, check out [my Shiny app here](https://sean-conroy.shinyapps.io/shinymurdermap/).
+To explore the Dallas Murder data more yourself, check out [my Shiny app here](https://sean-conroy.shinyapps.io/shinymurdermap/){target="_blank"}.
 
-The code behind this blog post is [on GitHub here](https://github.com/meystingray/meystingray.github.io/blob/master/content/post/2020-12-02-murder-rates-in-dallas/index.Rmd).
+The code behind this blog post is [on GitHub here](https://github.com/meystingray/meystingray.github.io/blob/master/content/post/2020-12-02-murder-rates-in-dallas/index.Rmd){target="_blank"}.
 
-
+Note, 1-11-2020: Data has been refreshed to include all of 2020.
 ```{r Load Library, echo = FALSE}
 pkg <- c("data.table","ggplot2","stringr","dplyr","gganimate","RSocrata","ggmap")
 suppressWarnings(suppressPackageStartupMessages(
@@ -85,7 +85,7 @@ ggmap(DallasMapZoom11,extent = "device") +
           axis.text.y=element_blank(),
           axis.ticks.y=element_blank()) +
     ggtitle("Dallas Murders since 2014") + 
-    scale_fill_manual(values = c("black", "dark gray", "blue", "purple", "green","orange","red"))
+    scale_fill_manual(values = c("black", "dark gray", "blue", "purple", "green","orange","red","yellow"))
 ```
 
 

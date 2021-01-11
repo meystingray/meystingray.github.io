@@ -18,7 +18,7 @@ token <- readRDS("droptoken.rds")
 drop_download(path = "Shiny/Murder.RDS",local_path =  paste0(tempdir(), "/MurderData.RDS"),overwrite = TRUE, dtoken = token)
 Murder <- readRDS(paste0(tempdir(), "/MurderData.RDS"))
 
-Murder <- readRDS("C:/Users/sconroy/Documents/DallasPoliceData/Murder.RDS")
+#Murder <- readRDS("C:/Users/sconroy/Documents/DallasPoliceData/Murder.RDS")
 #Murder <- drop_read_rds("Shiny/Murder.RDS",dtoken = token)
 
 #setwd("C:/Users/sconroy/Documents/meystingray.github.io")
