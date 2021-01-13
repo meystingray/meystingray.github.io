@@ -10,7 +10,7 @@ tags: []
 
 To explore the Dallas Murder data more yourself, check out [my Shiny app here](https://sean-conroy.shinyapps.io/shinymurdermap/){target="_blank"}.
 
-The code behind this blog post is [on GitHub here](https://github.com/meystingray/meystingray.github.io/blob/master/content/post/2020-12-02-murder-rates-in-dallas/index.Rmd){target="_blank"}.
+The code behind this blog post is [on GitHub here](https://github.com/meystingray/meystingray.github.io/blob/master/content/post/2020-12-22-mapping-murders-in-dallas/index.RMD){target="_blank"}.
 
 Note, 1-11-2020: Data has been refreshed to include all of 2020.
 ```{r Load Library, echo = FALSE}
@@ -19,17 +19,25 @@ suppressWarnings(suppressPackageStartupMessages(
     invisible(lapply(pkg, function(x) require(x, character.only = T, quietly = T)))
 ))
 
+library(gganimate)
+library(ggmap)
+library(gifski)
+
 #PI <- read.socrata("https://www.dallasopendata.com/resource/qv6i-rri7.csv")
 #saveRDS(PI,file = "C:/Users/sconroy/Desktop/Debug/PoliceIncidents12-17-20.RDS")
-#setDT(PI)
- 
-#Murder <- PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident),]
-Murder <- readRDS("C:/Users/sconroy/Documents/DallasPoliceData/Murder.RDS")
+
+PI <- readRDS("C:/Users/sconroy/Documents/DallasPoliceData/PoliceIncidents1-9-21.RDS")
+setDT(PI)
+
+Murder <- PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident) | grepl("MURDER",ucr_offense) | 
+                 grepl("HOMICIDE",nibrs_crime_category) | grepl("MURDER",nibrs_crime),]
+
 
 
 # Extract Lat / Long frm geocoded column
 Murder[,rowid := 1:.N]
 Murder[,Date := as.Date(substr(date1,1,10))]
+Murder[,MonthDate := as.Date(paste0(format(Date,"%Y-%m"),"-01"))]
 Murder[,LatLongStart := regexpr("(",geocoded_column,fixed = TRUE)[1] + 1,by = rowid]
 Murder[,LatLongEnd := regexpr(")",geocoded_column,fixed = TRUE)[1] - 1,by = rowid]
 Murder[,LatLong := substr(geocoded_column,start = LatLongStart,stop = LatLongEnd)]
@@ -43,6 +51,7 @@ MurderWithLatLong <- Murder[!is.na(Latitude) & !is.na(Longitude) & !is.na(Date) 
                             .(Date,Longitude,Latitude,Year,servyr)]
 Murders2020 <- MurderWithLatLong[Date > as.Date("2020-01-01"),.(Date,Latitude,Longitude)]
 
+setorder(Murder,Date)
 # Shootings by Year on Map
 #ggplot(Murder) + geom_point(aes(x = Longitude,y = Latitude,color = signal)) + facet_wrap(~ servyr) + ylab(NULL)
 #ggplot(Murder[signal == "19 - SHOOTING",]) + geom_point(aes(x = Longitude,y = Latitude)) + facet_wrap(~ servyr) + ylab(NULL)

@@ -10,15 +10,20 @@ tags: []
 
 
 
-<div id="dallas-murder-rate" class="section level2">
-<h2>Dallas Murder Rate</h2>
-<p>Based on the following data set from Dallas Open Data:
-<a href="https://www.dallasopendata.com/Public-Safety/Public-Safety-Police-Incidents/yn72-daik" class="uri">https://www.dallasopendata.com/Public-Safety/Public-Safety-Police-Incidents/yn72-daik</a></p>
+<div id="data-source" class="section level2">
+<h2>Data Source</h2>
+<p>Based on the following data set <a href="https://www.dallasopendata.com/Public-Safety/Public-Safety-Police-Incidents/yn72-daik" target="_blank">‘Police Incidents’ from Dallas Open Data</a>.</p>
+<p>To explore the Dallas Murder data more yourself, check out <a href="https://sean-conroy.shinyapps.io/shinymurdermap/" target="_blank">my Shiny app here</a>.</p>
+<p>The code behind this blog post is <a href="https://github.com/meystingray/meystingray.github.io/blob/master/content/post/2020-12-02-murder-rates-in-dallas/index.Rmd" target="_blank">on GitHub here</a>.</p>
 <p>Data refresh date: 1-9-2021</p>
 <p>Load data directly from DallasOpenData using Socrata API:</p>
-<pre class="r"><code>#PI &lt;- read.socrata(&quot;https://www.dallasopendata.com/resource/qv6i-rri7.csv&quot;)
-PI &lt;- readRDS(&quot;C:/Users/sconroy/Documents/DallasPoliceData/PoliceIncidents1-9-21.RDS&quot;)
+<pre class="r"><code>PI &lt;- read.socrata(&quot;https://www.dallasopendata.com/resource/qv6i-rri7.csv&quot;)
+
 setDT(PI)</code></pre>
+</div>
+<div id="analysis" class="section level2">
+<h2>Analysis</h2>
+<p>Ok, let’s get to work.</p>
 <p>First, let’s extract murder incidents by looking for “MURDER” or “HOMICIDE” in various columns used to describe the incident.</p>
 <pre class="r"><code>Murder &lt;- PI[grepl(&quot;MURDER&quot;,offincident) | grepl(&quot;HOMICIDE&quot;,offincident) | grepl(&quot;MURDER&quot;,ucr_offense) | 
                  grepl(&quot;HOMICIDE&quot;,nibrs_crime_category) | grepl(&quot;MURDER&quot;,nibrs_crime),]
@@ -52,7 +57,9 @@ Murder[,SmoothNumPerMonth := predict(smooth.spline(NumPerMonth,df = 10))$y]</cod
 <p><img src="index_files/figure-html/Monthly%20Murder%20Rate-1.png" width="672" /></p>
 <p>Yes - it definitely looks like there’s an uptick in the last few months of 2020!</p>
 <p>Now let’s try to get an idea of Dallas PD staffing levels. We’ll do this by finding the avg number of unique badge #’s per month that are involved in the Police Incidents data set.</p>
-<p>PI Badge Analysis</p>
+</div>
+<div id="pi-badge-analysis" class="section level2">
+<h2>PI Badge Analysis</h2>
 <pre class="r"><code>PI[,Date := as.Date(substr(date1,1,10))]
 PI[,MonthDate := as.Date(paste0(format(Date,&quot;%Y-%m&quot;),&quot;-01&quot;))]
 
@@ -92,7 +99,7 @@ Murder &lt;- merge(x = Murder,y = NumOfficers,by.x = &quot;MonthDate&quot;,by.y 
         axis.title.y.left = element_text(color = &quot;red&quot;),
         axis.title.y.right = element_text(color = &quot;blue&quot;))</code></pre>
 <p><img src="index_files/figure-html/Monthly%20Murder%20Rate%20Against%20DPD%20staffing%20levels-1.png" width="672" /></p>
-<p>Interesting! During the 2016 uptick in violent crime, DPD staffing levels increased as well, and peaked right before the murders peaked, but they seem to have remained flat during the 2020 increase in murders.</p>
+<p>Interesting! During the 2016 uptick in violent crime, DPD staffing levels increased as well, and peaked right before the murders peaked, but they seem to have remained more flat during the 2020 increase in murders.</p>
 <p>Let’s take a look at the same data, but bin it by week instead of month:</p>
 <pre class="r"><code>ggplot(Murder) +
     geom_point(aes(x = WeekDate,y = NumPerWeek)) + 
