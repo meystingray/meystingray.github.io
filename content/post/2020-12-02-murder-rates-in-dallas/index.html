@@ -8,22 +8,20 @@ categories:
 tags: []
 ---
 
-<link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
-<script src="index_files/anchor-sections/anchor-sections.js"></script>
 
 
 <div id="dallas-murder-rate" class="section level2">
 <h2>Dallas Murder Rate</h2>
 <p>Based on the following data set from Dallas Open Data:
 <a href="https://www.dallasopendata.com/Public-Safety/Public-Safety-Police-Incidents/yn72-daik" class="uri">https://www.dallasopendata.com/Public-Safety/Public-Safety-Police-Incidents/yn72-daik</a></p>
-<p>Data refresh date:</p>
-<pre><code>## [1] &quot;2020-12-13&quot;</code></pre>
+<p>Data refresh date: 1-9-2021</p>
 <p>Load data directly from DallasOpenData using Socrata API:</p>
-<pre class="r"><code>PI &lt;- read.socrata(&quot;https://www.dallasopendata.com/resource/qv6i-rri7.csv&quot;)
-#PI &lt;- readRDS(&quot;C:/Users/sconroy/Desktop/Debug/PoliceIncidents.RDS&quot;)
+<pre class="r"><code>#PI &lt;- read.socrata(&quot;https://www.dallasopendata.com/resource/qv6i-rri7.csv&quot;)
+PI &lt;- readRDS(&quot;C:/Users/sconroy/Documents/DallasPoliceData/PoliceIncidents1-9-21.RDS&quot;)
 setDT(PI)</code></pre>
-<p>First, let’s extract murder incidents by looking for “MURDER” or “HOMICIDE” in the officer’s incident description.</p>
-<pre class="r"><code>Murder &lt;- PI[grepl(&quot;MURDER&quot;,offincident) | grepl(&quot;HOMICIDE&quot;,offincident),]
+<p>First, let’s extract murder incidents by looking for “MURDER” or “HOMICIDE” in various columns used to describe the incident.</p>
+<pre class="r"><code>Murder &lt;- PI[grepl(&quot;MURDER&quot;,offincident) | grepl(&quot;HOMICIDE&quot;,offincident) | grepl(&quot;MURDER&quot;,ucr_offense) | 
+                 grepl(&quot;HOMICIDE&quot;,nibrs_crime_category) | grepl(&quot;MURDER&quot;,nibrs_crime),]
 Murder[,Date := as.Date(substr(date1,1,10))]
 
 # Add Dates and Incidents / Day &amp; Month counts 
@@ -44,14 +42,57 @@ Murder[,SmoothNumPerWeek := predict(smooth.spline(NumPerWeek,df = 55))$y]
 Murder[,SmoothNumPerMonth := predict(smooth.spline(NumPerMonth,df = 10))$y]</code></pre>
 <p>Now let’s take a look at Murder Rates per Month over the last few years.</p>
 <pre class="r"><code>ggplot(Murder) +
-    geom_line(aes(x = MonthDate,y = SmoothNumPerMonth,color = &quot;red&quot;)) + 
+    geom_line(aes(x = MonthDate,y = SmoothNumPerMonth,color = &quot;red&quot;),size = 1) + 
     geom_point(data = Murder,aes(x = Date,y = NumPerMonth)) + 
     geom_line(aes(x = Date,y = SmoothNumPerDay,color = &quot;blue&quot;)) +
-    ggtitle(&quot;Murder Rates&quot;) + ylab(&quot;# Murders&quot;) + 
+    ggtitle(&quot;Dallas Murder Rates since 2014&quot;) + ylab(&quot;# Murders&quot;) + 
     scale_colour_manual(name = &#39;&#39;,values = c(&#39;blue&#39;=&#39;blue&#39;,&#39;red&#39;=&#39;red&#39;),
-                        labels = c(&#39;Per Day&#39;,&#39;Per Month&#39;))</code></pre>
+                        labels = c(&#39;Per Day&#39;,&#39;Per Month&#39;)) + 
+    theme(legend.position = &quot;top&quot;,plot.title = element_text(hjust = 0.5))</code></pre>
 <p><img src="index_files/figure-html/Monthly%20Murder%20Rate-1.png" width="672" /></p>
 <p>Yes - it definitely looks like there’s an uptick in the last few months of 2020!</p>
+<p>Now let’s try to get an idea of Dallas PD staffing levels. We’ll do this by finding the avg number of unique badge #’s per month that are involved in the Police Incidents data set.</p>
+<p>PI Badge Analysis</p>
+<pre class="r"><code>PI[,Date := as.Date(substr(date1,1,10))]
+PI[,MonthDate := as.Date(paste0(format(Date,&quot;%Y-%m&quot;),&quot;-01&quot;))]
+
+NumOfficers &lt;- data.table(MonthDate = unique(PI$MonthDate))
+for (m in NumOfficers$MonthDate) {
+    
+    NumOfficers[MonthDate == m,NumOfficers := 
+                    length(unique(c(
+                        PI[MonthDate == m,unique(ro1badge)],
+                        PI[MonthDate == m,unique(ro2badge)],
+                        PI[MonthDate == m,unique(assoffbadge)]
+                    )))]
+    
+}
+
+# We filter because the older data is very low...either faulty or they didn&#39;t keep track.
+NumOfficers &lt;- NumOfficers[MonthDate &gt;= as.Date(&quot;2014-06-01&quot;) &amp; MonthDate &lt; as.Date(&quot;2021-01-01&quot;),]
+setorder(NumOfficers,MonthDate)
+plot(NumOfficers$MonthDate,NumOfficers$NumOfficers,type = &quot;l&quot;)</code></pre>
+<p><img src="index_files/figure-html/PI%20Badge%20Analysis-1.png" width="672" /></p>
+<pre class="r"><code># Merge this in with the Murder Data
+Murder &lt;- merge(x = Murder,y = NumOfficers,by.x = &quot;MonthDate&quot;,by.y = &quot;MonthDate&quot;)</code></pre>
+<p>Now let’s plot the Murder rate against the DPD staffing levels.</p>
+<pre class="r"><code>ggplot(Murder) +
+    geom_line(aes(x = MonthDate,y = SmoothNumPerMonth,color = &quot;red&quot;),size = 1) + 
+    #geom_point(aes(x = Date,y = NumPerMonth,color = &quot;Red&quot;)) + 
+    geom_line(aes(x = MonthDate,y = NumOfficers/120,color = &quot;blue&quot;),size = 1) +
+    ggtitle(&quot;Dallas Murder Rates since 2014&quot;) + ylab(&quot;# Murders&quot;) + 
+    scale_colour_manual(name = &#39;&#39;,values = c(&#39;blue&#39;=&#39;blue&#39;,&#39;red&#39;=&#39;red&#39;),
+                        labels = c(&#39;# Officers Making Arrests in DPD Per Month&#39;,&#39;Dallas Murders Per Month&#39;)) + 
+    theme(legend.position = &quot;top&quot;,plot.title = element_text(hjust = 0.5)) + 
+    scale_y_continuous(name = &quot;Num Murders Per Month&quot;, 
+        sec.axis = sec_axis(~ .*180, name = &quot;Num Officers&quot;)
+    ) +
+    theme(axis.text.y.left = element_text(colour = &quot;red&quot;),
+          axis.text.y.right = element_text(colour = &quot;blue&quot;),
+        axis.title.y.left = element_text(color = &quot;red&quot;),
+        axis.title.y.right = element_text(color = &quot;blue&quot;))</code></pre>
+<p><img src="index_files/figure-html/Monthly%20Murder%20Rate%20Against%20DPD%20staffing%20levels-1.png" width="672" /></p>
+<p>Interesting! During the 2016 uptick in violent crime, DPD staffing levels increased as well, and peaked right before the murders peaked, but they seem to have remained flat during the 2020 increase in murders.</p>
 <p>Let’s take a look at the same data, but bin it by week instead of month:</p>
 <pre class="r"><code>ggplot(Murder) +
     geom_point(aes(x = WeekDate,y = NumPerWeek)) + 
@@ -74,22 +115,24 @@ Murder[,SmoothNumPerMonth := predict(smooth.spline(NumPerMonth,df = 10))$y]</cod
 <pre class="r"><code># Plot by Incident Type
 table(Murder$offincident)</code></pre>
 <pre><code>## 
-##                 CAPITAL MURDER BY TERROR THREAT 
-##                                             125 
-##              CAPITAL MURDER OF MULTIPLE PERSONS 
-##                                              37 
-##               CAPITAL MURDER WHILE REMUNERATION 
-##                                               1 
-##                     CRIMINAL NEGLIGENT HOMICIDE 
-##                                             108 
-## CRIMINAL NEGLIGENT HOMICIDE (DISTRACTED DRIVING 
-##                                               2 
-##                                        HOMICIDE 
-##                                              15 
-##                      HOMICIDE (POLICE SHOOTING) 
-##                                               7 
-##                                          MURDER 
-##                                             470</code></pre>
+##                    CAPITAL MURDER BY TERROR THREAT 
+##                                                126 
+##                 CAPITAL MURDER OF MULTIPLE PERSONS 
+##                                                 35 
+##                  CAPITAL MURDER WHILE REMUNERATION 
+##                                                  1 
+##                        CRIMINAL NEGLIGENT HOMICIDE 
+##                                                106 
+##                                           HOMICIDE 
+##                                                 15 
+##                         HOMICIDE (POLICE SHOOTING) 
+##                                                  7 
+##                                       MANSLAUGHTER 
+##                                                 11 
+## MANSLAUGHTER - TRAFFIC FATALITY - RECKLESS DRIVING 
+##                                                  1 
+##                                             MURDER 
+##                                                477</code></pre>
 <pre class="r"><code>ggplot(Murder[!(offincident %in% c(&quot;CAPITAL MURDER WHILE REMUNERATION&quot;,
                                    &quot;CRIMINAL NEGLIGENT HOMICIDE (DISTRACTED DRIVING&quot;))]) +
     geom_bar(aes(x = MonthDate)) + facet_wrap(~ offincident)</code></pre>
@@ -120,7 +163,7 @@ ggplot(Murder,aes(x = Shift)) + geom_bar() +
 <p>Most murders occur between 11pm and 7am. No suprises there.</p>
 <p>Age distribution of victims per year:</p>
 <pre class="r"><code>ggplot(Murder,aes(x = compage)) + geom_histogram(bins = 10) + facet_wrap(~ servyr)</code></pre>
-<pre><code>## Warning: Removed 23 rows containing non-finite values (stat_bin).</code></pre>
+<pre><code>## Warning: Removed 22 rows containing non-finite values (stat_bin).</code></pre>
 <p><img src="index_files/figure-html/Per%20Victim%20Age%20Distribution-1.png" width="672" />
 Looks like the ages of the victimes are left-skewed towards younger victims, peaking in the 20’s.</p>
 <p>Sex distrbution of victims:</p>

@@ -23,24 +23,27 @@ Based on the following data set from Dallas Open Data:
 <https://www.dallasopendata.com/Public-Safety/Public-Safety-Police-Incidents/yn72-daik>
     
     
-Data refresh date:
+Data refresh date: 1-9-2021
 ```{r printDate, echo = FALSE}
-print(Sys.Date())
+#print(Sys.Date())
 ```
 
 Load data directly from DallasOpenData using Socrata API:
 ```{r LoadData, echo = TRUE}
 
-PI <- read.socrata("https://www.dallasopendata.com/resource/qv6i-rri7.csv")
+#PI <- read.socrata("https://www.dallasopendata.com/resource/qv6i-rri7.csv")
+PI <- readRDS("C:/Users/sconroy/Documents/DallasPoliceData/PoliceIncidents1-9-21.RDS")
 setDT(PI)
 
 ```
 
 
-First, let's extract murder incidents by looking for "MURDER" or "HOMICIDE" in the officer's incident description.
+First, let's extract murder incidents by looking for "MURDER" or "HOMICIDE" in various columns used to describe the incident.
+
 ```{r Extract Murders, echo = TRUE}
 
-Murder <- PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident),]
+Murder <- PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident) | grepl("MURDER",ucr_offense) | 
+                 grepl("HOMICIDE",nibrs_crime_category) | grepl("MURDER",nibrs_crime),]
 Murder[,Date := as.Date(substr(date1,1,10))]
 
 # Add Dates and Incidents / Day & Month counts 
@@ -83,7 +86,61 @@ ggplot(Murder) +
 
 Yes - it definitely looks like there's an uptick in the last few months of 2020!
 
+Now let's try to get an idea of Dallas PD staffing levels.  We'll do this by finding the avg number of unique badge #'s per month that are involved in the Police Incidents data set.
+
+PI Badge Analysis
+```{r PI Badge Analysis, echo = TRUE}
+PI[,Date := as.Date(substr(date1,1,10))]
+PI[,MonthDate := as.Date(paste0(format(Date,"%Y-%m"),"-01"))]
+
+NumOfficers <- data.table(MonthDate = unique(PI$MonthDate))
+for (m in NumOfficers$MonthDate) {
+    
+    NumOfficers[MonthDate == m,NumOfficers := 
+                    length(unique(c(
+                        PI[MonthDate == m,unique(ro1badge)],
+                        PI[MonthDate == m,unique(ro2badge)],
+                        PI[MonthDate == m,unique(assoffbadge)]
+                    )))]
+    
+}
+
+# We filter because the older data is very low...either faulty or they didn't keep track.
+NumOfficers <- NumOfficers[MonthDate >= as.Date("2014-06-01") & MonthDate < as.Date("2021-01-01"),]
+setorder(NumOfficers,MonthDate)
+plot(NumOfficers$MonthDate,NumOfficers$NumOfficers,type = "l")
+
+# Merge this in with the Murder Data
+Murder <- merge(x = Murder,y = NumOfficers,by.x = "MonthDate",by.y = "MonthDate")
+
+```
+
+Now let's plot the Murder rate against the DPD staffing levels.
+
+``` {r Monthly Murder Rate Against DPD staffing levels, echo = TRUE}
+ggplot(Murder) +
+    geom_line(aes(x = MonthDate,y = SmoothNumPerMonth,color = "red"),size = 1) + 
+    #geom_point(aes(x = Date,y = NumPerMonth,color = "Red")) + 
+    geom_line(aes(x = MonthDate,y = NumOfficers/120,color = "blue"),size = 1) +
+    ggtitle("Dallas Murder Rates since 2014") + ylab("# Murders") + 
+    scale_colour_manual(name = '',values = c('blue'='blue','red'='red'),
+                        labels = c('# Officers Making Arrests in DPD Per Month','Dallas Murders Per Month')) + 
+    theme(legend.position = "top",plot.title = element_text(hjust = 0.5)) + 
+    scale_y_continuous(name = "Num Murders Per Month", 
+        sec.axis = sec_axis(~ .*180, name = "Num Officers")
+    ) +
+    theme(axis.text.y.left = element_text(colour = "red"),
+          axis.text.y.right = element_text(colour = "blue"),
+        axis.title.y.left = element_text(color = "red"),
+        axis.title.y.right = element_text(color = "blue"))
+
+```
+
+
+Interesting!  During the 2016 uptick in violent crime, DPD staffing levels increased as well, and peaked right before the murders peaked, but they seem to have remained flat during the 2020 increase in murders.
+
 Let's take a look at the same data, but bin it by week instead of month:
+
 ```{r Weekly Murder Rate, echo = TRUE}
 ggplot(Murder) +
     geom_point(aes(x = WeekDate,y = NumPerWeek)) + 
