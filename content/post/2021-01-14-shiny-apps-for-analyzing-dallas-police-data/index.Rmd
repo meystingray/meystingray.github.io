@@ -16,7 +16,7 @@ To explore the Dallas Murder data more yourself, check out [my Shiny app here](h
 
 ## Dallas Trafficking
 
-```{r Load Data,echo = FALSE}
+```{r Load Data,echo = FALSE,eval=FALSE}
 library(data.table)
 PI <- readRDS("C:/Users/sconroy/Documents/DallasPoliceData/PoliceIncidents1-9-21.RDS")
 
@@ -24,7 +24,7 @@ PI <- readRDS("C:/Users/sconroy/Documents/DallasPoliceData/PoliceIncidents1-9-21
 
 To explore any recorded incidents of human trafficking in the Dallas area, I used the following code:
 
-```{r Extract Traffick,echo = TRUE}
+```{r Extract Traffick,echo = TRUE,eval=FALSE}
 
 setDT(PI)
 traffic <- PI[grepl("TRAFFICKING",offincident),]
@@ -41,6 +41,7 @@ traffic[,Longitude := substr(LatLong,start = LatLongComma + 1,stop = 1000)]
 traffic[,Longitude := as.numeric(Longitude)]
 traffic[,Latitude := as.numeric(Latitude)]
 
+# Manually fix two missing geocodes
 traffic[is.na(Latitude) & incident_address == "14040 N STEMMONS SERV",Latitude := 32.93769989950343]
 traffic[is.na(Longitude) & incident_address == "14040 N STEMMONS SERV",Longitude := -96.90205446873641]
 
@@ -49,17 +50,28 @@ traffic[is.na(Longitude) & incident_address == "7815 L B J FWY",Longitude := -96
 
 traffic[,Year := as.factor(servyr)]
 
-keepCols <- c("incidentnum", "servyr", "Date", "Year", "watch", "signal", "offincident", "premise", "incident_address", "apt", "ra", "beat", "division", "sector", "district",
-"involvement", "victimtype", "comprace", "compethnicity", "compsex", "compage", "followup1", "followup2", "status", "ucr_disp", "victiminjurydesc", "victimcond", "mo",
-"Latitude","Longitude","NumIncidentsPerYear")
+```
 
-traffic <- traffic[,..keepCols]
 
-print(traffic)
+Here's the code to create the Leaflet map within the Shiny app:
+
+```{r Leaflet,echo = TRUE,eval=FALSE}
+
+        leaflet(data = traffic) %>% 
+            addProviderTiles(providers$Stamen.TonerLite,options = providerTileOptions(noWrap = TRUE)) %>% 
+                addCircleMarkers(lng = ~Longitude, lat = ~Latitude, weight = 2, radius = input$MarkerSize,
+                                 fillOpacity = input$MarkerOpacity,fillColor = ~pal(Year),color = "gray",stroke = 1,
+                                 popup = ~paste0("DPD Incident Date: ",traffic$Date,", Incident Address: ",incident_address,
+                                                 ", Victim Sex: ",traffic$compsex,
+                                                ", Victim Age: ",traffic$compage,", MO: ",traffic$mo)) %>%
+                addLegend(position = "bottomleft",
+                          pal = pal, values = ~traffic$Year,
+                          title = "Legend",
+                          opacity = 1)
 
 ```
 
 
 To explore the Dallas Trafficking data more yourself, check out [my Shiny app here](https://sean-conroy.shinyapps.io/shinymurdermap/){target="_blank"}.
 
-The code behind this blog post is [on GitHub here](https://github.com/meystingray/meystingray.github.io/){target="_blank"}.
+The full code behind the Shiny App is [on GitHub here](https://github.com/meystingray/meystingray.github.io/){target="_blank"}.

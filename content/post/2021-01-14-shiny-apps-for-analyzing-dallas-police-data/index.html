@@ -30,156 +30,26 @@ traffic[,Longitude := substr(LatLong,start = LatLongComma + 1,stop = 1000)]
 traffic[,Longitude := as.numeric(Longitude)]
 traffic[,Latitude := as.numeric(Latitude)]
 
+# Manually fix two missing geocodes
 traffic[is.na(Latitude) &amp; incident_address == &quot;14040 N STEMMONS SERV&quot;,Latitude := 32.93769989950343]
 traffic[is.na(Longitude) &amp; incident_address == &quot;14040 N STEMMONS SERV&quot;,Longitude := -96.90205446873641]
 
 traffic[is.na(Latitude) &amp; incident_address == &quot;7815 L B J FWY&quot;,Latitude := 32.925475281010286]
 traffic[is.na(Longitude) &amp; incident_address == &quot;7815 L B J FWY&quot;,Longitude := -96.77161085979215]
 
-traffic[,Year := as.factor(servyr)]
-
-keepCols &lt;- c(&quot;incidentnum&quot;, &quot;servyr&quot;, &quot;Date&quot;, &quot;Year&quot;, &quot;watch&quot;, &quot;signal&quot;, &quot;offincident&quot;, &quot;premise&quot;, &quot;incident_address&quot;, &quot;apt&quot;, &quot;ra&quot;, &quot;beat&quot;, &quot;division&quot;, &quot;sector&quot;, &quot;district&quot;,
-&quot;involvement&quot;, &quot;victimtype&quot;, &quot;comprace&quot;, &quot;compethnicity&quot;, &quot;compsex&quot;, &quot;compage&quot;, &quot;followup1&quot;, &quot;followup2&quot;, &quot;status&quot;, &quot;ucr_disp&quot;, &quot;victiminjurydesc&quot;, &quot;victimcond&quot;, &quot;mo&quot;,
-&quot;Latitude&quot;,&quot;Longitude&quot;,&quot;NumIncidentsPerYear&quot;)
-
-traffic &lt;- traffic[,..keepCols]
-
-print(traffic)</code></pre>
-<pre><code>##     incidentnum servyr       Date Year watch                        signal
-##  1: 219753-2020   2020 2020-05-01 2020     1    58 - ROUTINE INVESTIGATION
-##  2: 158179-2020   2020 2020-01-01 2020     2    58 - ROUTINE INVESTIGATION
-##  3: 166313-2020   2020 2020-09-17 2020     2    58 - ROUTINE INVESTIGATION
-##  4: 086625-2020   2020 2020-05-15 2020     2                    40 - OTHER
-##  5: 086625-2020   2020 2020-05-15 2020     2                    40 - OTHER
-##  6: 230289-2020   2020 2020-12-01 2020     1    58 - ROUTINE INVESTIGATION
-##  7: 215465-2019   2019 2019-02-20 2019     1    58 - ROUTINE INVESTIGATION
-##  8: 114607-2019   2019 2019-06-04 2019     1    58 - ROUTINE INVESTIGATION
-##  9: 221437-2018   2018 2018-09-23 2018     2    6X - MAJOR DIST (VIOLENCE)
-## 10: 047785-2018   2018 2017-12-01 2018     2    58 - ROUTINE INVESTIGATION
-## 11: 092241-2017   2017 2017-04-25 2017     2                    40 - OTHER
-## 12: 186968-2015   2015 2015-08-05 2015     1 41/20 - ROBBERY - IN PROGRESS
-## 13: 047785-2018   2018 2017-12-01 2018     2    58 - ROUTINE INVESTIGATION
-## 14: 205936-2017   2017 2017-09-07 2017     3    58 - ROUTINE INVESTIGATION
-##                                                    offincident
-##  1:                         TRAFFICKING OF PERSONS, CONTINUOUS
-##  2:                         TRAFFICKING OF PERSONS, CONTINUOUS
-##  3:       TRAFFICKING OF PERSONS ENGAGE CONDUCT/SEXUAL/BENEFIT
-##  4:                         TRAFFICKING OF PERSONS, CONTINUOUS
-##  5:                         TRAFFICKING OF PERSONS, CONTINUOUS
-##  6: TRAFFICKING OF PERSONS (PROSTITUTION/FORCED LABOR) &lt;18 FOR
-##  7:               TRAFFICKING OF PERSONS ENGAGE CONDUCT/SEXUAL
-##  8:                            TRAFFICKING OF PERSONS  BENEFIT
-##  9:               TRAFFICKING OF PERSONS ENGAGE CONDUCT/SEXUAL
-## 10:               TRAFFICKING OF PERSONS W/INTENT FORCED LABOR
-## 11:     TRAFFICKING OF PERSONS CHILD PROHIBITED SEXUAL CONDUCT
-## 12:           TRAFFICKING OF PERSONS PROHIBITED SEXUAL CONDUCT
-## 13:               TRAFFICKING OF PERSONS W/INTENT FORCED LABOR
-## 14:   TRAFFICKING  OF PERSONS CHILD BENEFIT PROHIB SEX CONDUCT
-##                                   premise      incident_address apt   ra beat
-##  1:                       Hotel/Motel/ETC 14040 N STEMMONS SERV       NA  151
-##  2:                       Hotel/Motel/ETC        7815 L B J FWY   A 1020  635
-##  3:                       Hotel/Motel/ETC       1400 S LAMAR ST     2123  151
-##  4:                                 Other        2241 BUTLER ST 202 3101  541
-##  5:                                 Other        2241 BUTLER ST 202 3101  541
-##  6:                       Hotel/Motel/ETC     2395 STEMMONS TRL     4451  521
-##  7:                                 Other      11309 EMERALD ST   C 3024  532
-##  8:                       Hotel/Motel/ETC        555 S LAMAR ST     2085  135
-##  9:            Highway, Street, Alley ETC     2341 N MASTERS DR     1246  326
-## 10: Restaurant/Food Service/TABC Location 5365 SPRING VALLEY RD 158 1008  631
-## 11:              Parking Lot (All Others)      9230 SKILLMAN ST     1042  257
-## 12:                                 Other       10921 ESTATE LN     8821  231
-## 13: Restaurant/Food Service/TABC Location 5365 SPRING VALLEY RD 158 1008  631
-## 14:            Highway, Street, Alley ETC       10900 DENNIS RD     3016  552
-##          division sector district involvement     victimtype           comprace
-##  1:       Central    150               Victim     Individual              Black
-##  2: NORTH CENTRAL    630      D11      Victim     Individual            Unknown
-##  3:       CENTRAL    150       D2      Victim     Individual              Black
-##  4:     NORTHWEST    540       D2      Victim Society/Public                   
-##  5:     NORTHWEST    540       D2      Victim     Individual              White
-##  6:     NORTHWEST    520       D6      Victim     Individual            Unknown
-##  7:     NORTHWEST    530       D6      Victim     Individual              Asian
-##  8:       CENTRAL    130       D2      Victim     Individual              White
-##  9:     SOUTHEAST    320       D7      Victim     Individual              Black
-## 10: NORTH CENTRAL    630      D11      Victim     Individual              Asian
-## 11:     NORTHEAST    250      D10      Victim     Individual              Black
-## 12:     NorthEast    230       10      Victim     Individual Hispanic or Latino
-## 13: NORTH CENTRAL    630      D11      Victim     Individual              Asian
-## 14:     NORTHWEST    550      D13      Victim     Individual              Black
-##              compethnicity compsex compage            followup1
-##  1: Non-Hispanic or Latino  Female      17       Investigations
-##  2: Non-Hispanic or Latino  Female      22 Strategic Deployment
-##  3: Non-Hispanic or Latino  Female      21 Strategic Deployment
-##  4:                                     NA                     
-##  5: Non-Hispanic or Latino  Female      40                     
-##  6:                Unknown Unknown      NA                     
-##  7: Non-Hispanic or Latino  Female      37                     
-##  8: Non-Hispanic or Latino  Female      18 Strategic Deployment
-##  9: Non-Hispanic or Latino  Female      22       Investigations
-## 10: Non-Hispanic or Latino  Female      52                     
-## 11: Non-Hispanic or Latino  Female      17       Investigations
-## 12:     Hispanic or Latino  Female      18                     
-## 13: Non-Hispanic or Latino  Female      60                     
-## 14: Non-Hispanic or Latino  Female      17       Investigations
-##                       followup2          status           ucr_disp
-##  1: Capers / Child Exploitation Clear by Arrest  CBA (Over Age 17)
-##  2:            Narcotics / Vice       Suspended          Suspended
-##  3:            Narcotics / Vice       Suspended          Suspended
-##  4:                                        Open               Open
-##  5:                                        Open               Open
-##  6:                             Clear by Arrest  CBA (Over Age 17)
-##  7:                                        Open               Open
-##  8:            Narcotics / Vice       Suspended          Suspended
-##  9: Capers / Child Exploitation       Suspended          Suspended
-## 10:                             Clear by Arrest  CBA (Over Age 17)
-## 11: Capers / Child Exploitation       Suspended          Suspended
-## 12:                                        Open               Open
-## 13:                             Clear by Arrest  CBA (Over Age 17)
-## 14: Capers / Child Exploitation Clear by Arrest CBEA (Over Age 17)
-##                        victiminjurydesc victimcond
-##  1:                                               
-##  2: CHIPPED TOOTH, LACERATIONS, CHOKING           
-##  3:                                               
-##  4:                                               
-##  5:                                               
-##  6:                                               
-##  7:                                               
-##  8:                                               
-##  9:                                               
-## 10:                                               
-## 11:                                         Stable
-## 12:                                               
-## 13:                                               
-## 14:                                               
-##                                                                mo Latitude
-##  1:  SUSP TRANSPORTED JUV VICTIM MULTIPLE TIMES FOR PROSTITUTION. 32.93770
-##  2:    SUSP TRANSPORTED AND FORCED COMP TO ENGAGE IN PROSTITUTION 32.92548
-##  3:    SUSP FORCING COMP TO ENGAGE IN SEX ACTS FOR MONEY BY FORCE 32.76736
-##  4:                SUSPECT FORCED THE COMP TO PROSTITUE BY THREAT 32.81573
-##  5:                SUSPECT FORCED THE COMP TO PROSTITUE BY THREAT 32.81573
-##  6:  SUSP FORCED VICTIM TO PROSTITUTE THROUGH FRAUD AND COERCION. 32.85735
-##  7: SUSPECT TRAFFICKED THE VICTIM WHO WAS FORCED IN THE SEX TRADE 32.89322
-##  8:   SUSPECT FACILITATED PROSTITUTION OF COMP AND RECEIVED MONEY 32.77534
-##  9:                           SUSP HAVING COMP HAVE SEX FOR MONEY 32.75280
-## 10:                 SUSPECTS TRAFFICKED FOREIGN FEMALES FOR LABOR 32.93956
-## 11:                        SUSPS COMPELLED COMP INTO PROSTITUTION 32.90328
-## 12:                            SUSP FORCED COMP INTO PROSTITUTION 32.88303
-## 13:                 SUSPECTS TRAFFICKED FOREIGN FEMALES FOR LABOR 32.93956
-## 14:  ADULT MALE RECRUITED &amp; TRANSPORTED JUVENILE FOR PROSTITUTION 32.89653
-##     Longitude NumIncidentsPerYear
-##  1: -96.90205                   6
-##  2: -96.77161                   6
-##  3: -96.79509                   6
-##  4: -96.83698                   6
-##  5: -96.83698                   6
-##  6: -96.88780                   6
-##  7: -96.89946                   2
-##  8: -96.80302                   2
-##  9: -96.64824                   3
-## 10: -96.81500                   3
-## 11: -96.71392                   2
-## 12: -96.69646                   1
-## 13: -96.81500                   3
-## 14: -96.88139                   2</code></pre>
+traffic[,Year := as.factor(servyr)]</code></pre>
+<p>Here’s the code to create the Leaflet map within the Shiny app:</p>
+<pre class="r"><code>        leaflet(data = traffic) %&gt;% 
+            addProviderTiles(providers$Stamen.TonerLite,options = providerTileOptions(noWrap = TRUE)) %&gt;% 
+                addCircleMarkers(lng = ~Longitude, lat = ~Latitude, weight = 2, radius = input$MarkerSize,
+                                 fillOpacity = input$MarkerOpacity,fillColor = ~pal(Year),color = &quot;gray&quot;,stroke = 1,
+                                 popup = ~paste0(&quot;DPD Incident Date: &quot;,traffic$Date,&quot;, Incident Address: &quot;,incident_address,
+                                                 &quot;, Victim Sex: &quot;,traffic$compsex,
+                                                &quot;, Victim Age: &quot;,traffic$compage,&quot;, MO: &quot;,traffic$mo)) %&gt;%
+                addLegend(position = &quot;bottomleft&quot;,
+                          pal = pal, values = ~traffic$Year,
+                          title = &quot;Legend&quot;,
+                          opacity = 1)</code></pre>
 <p>To explore the Dallas Trafficking data more yourself, check out <a href="https://sean-conroy.shinyapps.io/shinymurdermap/" target="_blank">my Shiny app here</a>.</p>
-<p>The code behind this blog post is <a href="https://github.com/meystingray/meystingray.github.io/" target="_blank">on GitHub here</a>.</p>
+<p>The full code behind the Shiny App is <a href="https://github.com/meystingray/meystingray.github.io/" target="_blank">on GitHub here</a>.</p>
 </div>
