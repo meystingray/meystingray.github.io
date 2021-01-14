@@ -5,37 +5,47 @@ library(dplyr)
 library(shiny)
 library(leaflet)
 
+token <- readRDS("droptoken.rds")
+
+drop_download(path = "Shiny/Traffic.RDS",local_path =  paste0(tempdir(), "/TrafficData.RDS"),overwrite = TRUE, dtoken = token)
+traffic <- readRDS(paste0(tempdir(), "/TrafficData.RDS"))
 
 
-traffic <- PI[grepl("TRAFFICKING",offincident),]
-traffic[,NumIncidentsPerYear := .N,by = "servyr"]
+# PI <- readRDS("C:/Users/sconroy/Documents/DallasPoliceData/PoliceIncidents1-9-21.RDS")
+# setDT(PI)
+# traffic <- PI[grepl("TRAFFICKING",offincident),]
+# traffic[,NumIncidentsPerYear := .N,by = "servyr"]
+# 
+# traffic[,rowid := 1:.N]
+# traffic[,Date := as.Date(substr(date1,1,10))]
+# traffic[,LatLongStart := regexpr("(",geocoded_column,fixed = TRUE)[1] + 1,by = rowid]
+# traffic[,LatLongEnd := regexpr(")",geocoded_column,fixed = TRUE)[1] - 1,by = rowid]
+# traffic[,LatLong := substr(geocoded_column,start = LatLongStart,stop = LatLongEnd)]
+# traffic[,LatLongComma := regexpr(",",LatLong,fixed = TRUE)[1],by = rowid]
+# traffic[,Latitude := substr(LatLong,start = 1,stop = LatLongComma - 1)]
+# traffic[,Longitude := substr(LatLong,start = LatLongComma + 1,stop = 1000)]
+# traffic[,Longitude := as.numeric(Longitude)]
+# traffic[,Latitude := as.numeric(Latitude)]
+# 
+# traffic[is.na(Latitude) & incident_address == "14040 N STEMMONS SERV",Latitude := 32.93769989950343]
+# traffic[is.na(Longitude) & incident_address == "14040 N STEMMONS SERV",Longitude := -96.90205446873641]
+# 
+# traffic[is.na(Latitude) & incident_address == "7815 L B J FWY",Latitude := 32.925475281010286]
+# traffic[is.na(Longitude) & incident_address == "7815 L B J FWY",Longitude := -96.77161085979215]
+# 
+# traffic[,Year := as.factor(servyr)]
+# 
+# keepCols <- c("incidentnum", "servyr", "Date", "Year", "watch", "signal", "offincident", "premise", "incident_address", "apt", "ra", "beat", "division", "sector", "district",
+# "involvement", "victimtype", "comprace", "compethnicity", "compsex", "compage", "followup1", "followup2", "status", "ucr_disp", "victiminjurydesc", "victimcond", "mo",
+# "Latitude","Longitude","NumIncidentsPerYear")
+# traffic <- traffic[,..keepCols]
 
-traffic[,rowid := 1:.N]
-traffic[,Date := as.Date(substr(date1,1,10))]
-traffic[,LatLongStart := regexpr("(",geocoded_column,fixed = TRUE)[1] + 1,by = rowid]
-traffic[,LatLongEnd := regexpr(")",geocoded_column,fixed = TRUE)[1] - 1,by = rowid]
-traffic[,LatLong := substr(geocoded_column,start = LatLongStart,stop = LatLongEnd)]
-traffic[,LatLongComma := regexpr(",",LatLong,fixed = TRUE)[1],by = rowid]
-traffic[,Latitude := substr(LatLong,start = 1,stop = LatLongComma - 1)]
-traffic[,Longitude := substr(LatLong,start = LatLongComma + 1,stop = 1000)]
-traffic[,Longitude := as.numeric(Longitude)]
-traffic[,Latitude := as.numeric(Latitude)]
+keepCols <- c("incidentnum", "Date", "watch", "signal", "offincident", "premise", "incident_address", "apt", "ra", "beat", "division", "sector", "district",
+              "involvement", "victimtype", "comprace", "compethnicity", "compsex", "compage", "followup1", "followup2", "status", "ucr_disp", "victiminjurydesc", "victimcond", "mo")
 
-traffic[is.na(Latitude) & incident_address == "14040 N STEMMONS SERV",Latitude := 32.93769989950343]
-traffic[is.na(Longitude) & incident_address == "14040 N STEMMONS SERV",Longitude := -96.90205446873641]
-
-traffic[is.na(Latitude) & incident_address == "7815 L B J FWY",Latitude := 32.925475281010286]
-traffic[is.na(Longitude) & incident_address == "7815 L B J FWY",Longitude := -96.77161085979215]
-
-traffic[,Year := as.factor(servyr)]
-
-keepCols <- c("incidentnum", "servyr", "Year", "watch", "signal", "offincident", "premise", "incident_address", "apt", "ra", "beat", "division", "sector", "district",
-"involvement", "victimtype", "comprace", "compethnicity", "compsex", "compage", "followup1", "followup2", "status", "ucr_disp", "victiminjurydesc", "victimcond", "mo",
-"Latitude","Longitude","NumIncidentsPerYear")
-traffic <- traffic[,..keepCols]
 
 ui <- fluidPage(
-    titlePanel("Exploring Dallas Tracking Since 2014"),
+    titlePanel("Exploring Dallas Trafficking Since 2014"),
     tabsetPanel(
         tabPanel("Map",
                  sidebarLayout(
@@ -45,11 +55,14 @@ ui <- fluidPage(
                          width = 4
                         ),
                      mainPanel(
-                         leafletOutput("LeafletMap")
+                         leafletOutput("LeafletMap",height = 700)
                         )
                      ),
                  ),
-        tabPanel("Plot",plotOutput("YearlyPlot")),
+        tabPanel("Plot",mainPanel(
+                 plotOutput("YearlyPlot"),
+                 plotOutput("Histogram")
+                 )),
         tabPanel("Data",tableOutput("Table"))
     )
 )
@@ -64,19 +77,19 @@ server <- function(input, output) {
         domain = traffic$Year
     )
     
-    content <- paste(sep = "<br/>",
-                     "<b><a href='http://www.samurainoodle.com'>Samurai Noodle</a></b>",
-                     "606 5th Ave. S",
-                     "Seattle, WA 98138"
-    )
-    
     output$LeafletMap <- renderLeaflet({
     
+        # input <- list()
+        # input$MarkerSize <- 5
+        # input$MarkerOpacity <- 1
+        
         leaflet(data = traffic) %>% 
             addProviderTiles(providers$Stamen.TonerLite,options = providerTileOptions(noWrap = TRUE)) %>% 
                 addCircleMarkers(lng = ~Longitude, lat = ~Latitude, weight = 2, radius = input$MarkerSize,
                                  fillOpacity = input$MarkerOpacity,fillColor = ~pal(Year),color = "gray",stroke = 1,
-                                 popup = !traffic$mo) %>%
+                                 popup = ~paste0("DPD Incident Date: ",traffic$Date,", Incident Address: ",incident_address,
+                                                 ", Victim Sex: ",traffic$compsex,
+                                                ", Victim Age: ",traffic$compage,", MO: ",traffic$mo)) %>%
                 addLegend(position = "bottomleft",
                           pal = pal, values = ~traffic$Year,
                           title = "Legend",
@@ -86,14 +99,23 @@ server <- function(input, output) {
     output$YearlyPlot <- renderPlot({
 
         ggplot(data = traffic,aes(x = servyr,y = NumIncidentsPerYear)) + geom_smooth() + geom_point() + 
-            ggtitle("Reported Tracking Incidents Per Year")
+            ggtitle("Reported Trafficking Incidents Per Year")
+        
+    })
+    
+    output$Histogram <- renderPlot({
+        
+        ggplot(data = traffic,aes(x = servyr)) + geom_histogram(bins = 6,colour="grey20", lwd=0.2,fill = "orange") + 
+            stat_bin(bins = 6,geom="text", colour="black", size=5.5,aes(label=..count..),
+                     position=position_stack(vjust=1.055)) +
+            ggtitle("Reported Trafficking Incidents Per Year")
         
     })
     
     output$Table <- renderTable({
         
-        traffic
-        
+        printTable <- traffic[,..keepCols]
+        printTable[,Date := as.character(Date)]
     })
     
 }

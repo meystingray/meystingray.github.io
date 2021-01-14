@@ -21,7 +21,7 @@ suppressWarnings(suppressPackageStartupMessages(
 
 library(gganimate)
 library(ggmap)
-library(gifski)
+suppressWarnings(suppressPackageStartupMessages(library(gifski)))
 
 #PI <- read.socrata("https://www.dallasopendata.com/resource/qv6i-rri7.csv")
 #saveRDS(PI,file = "C:/Users/sconroy/Desktop/Debug/PoliceIncidents12-17-20.RDS")
