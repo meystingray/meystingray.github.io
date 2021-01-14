@@ -16,6 +16,8 @@ To explore the Dallas Murder data more yourself, check out [my Shiny app here](h
 
 ## Dallas Trafficking
 
+To explore the Dallas Trafficking data yourself, check out [my Shiny app here](https://sean-conroy.shinyapps.io/shinytraffic/){target="_blank"}.
+
 ```{r Load Data,echo = FALSE,eval=FALSE}
 library(data.table)
 PI <- readRDS("C:/Users/sconroy/Documents/DallasPoliceData/PoliceIncidents1-9-21.RDS")
@@ -72,6 +74,4 @@ Here's the code to create the Leaflet map within the Shiny app:
 ```
 
 
-To explore the Dallas Trafficking data more yourself, check out [my Shiny app here](https://sean-conroy.shinyapps.io/shinymurdermap/){target="_blank"}.
-
-The full code behind the Shiny App is [on GitHub here](https://github.com/meystingray/meystingray.github.io/){target="_blank"}.
+The full code behind the Shiny App is [on GitHub here](https://github.com/meystingray/meystingray.github.io/tree/master/ShinyTraffic){target="_blank"}.
