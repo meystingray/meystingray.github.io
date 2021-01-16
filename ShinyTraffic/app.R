@@ -87,9 +87,10 @@ server <- function(input, output) {
             addProviderTiles(providers$Stamen.TonerLite,options = providerTileOptions(noWrap = TRUE)) %>% 
                 addCircleMarkers(lng = ~Longitude, lat = ~Latitude, weight = 2, radius = input$MarkerSize,
                                  fillOpacity = input$MarkerOpacity,fillColor = ~pal(Year),color = "gray",stroke = 1,
-                                 popup = ~paste0("DPD Incident Date: ",traffic$Date,", Incident Address: ",incident_address,
-                                                 ", Victim Sex: ",traffic$compsex,
-                                                ", Victim Age: ",traffic$compage,", MO: ",traffic$mo)) %>%
+                                 popup = ~paste0("Incident Date: ",traffic$Date,
+                                                 ",<BR> Incident Address: ",incident_address,
+                                                 ",<BR> Victim Sex: ",traffic$compsex,
+                                                ",<BR> Victim Age: ",traffic$compage,",<BR> MO: ",traffic$mo)) %>%
                 addLegend(position = "bottomleft",
                           pal = pal, values = ~traffic$Year,
                           title = "Legend",
