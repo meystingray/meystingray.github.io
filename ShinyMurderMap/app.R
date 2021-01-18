@@ -24,30 +24,30 @@ Murder <- readRDS(paste0(tempdir(), "/MurderData.RDS"))
 
 #setwd("C:/Users/sconroy/Documents/meystingray.github.io")
 
-
-Murder[,rowid := 1:.N]
-Murder[,Date := as.Date(substr(date1,1,10))]
-Murder[,MonthDate := as.Date(paste0(format(Date,"%Y-%m"),"-01"))]
-Murder[,WeekNum := strftime(Date, format = "%V")]
-Murder <- merge(Murder,Murder[,head(.SD, 1L),.SDcols = "Date",by = c("servyr","WeekNum")],by = c("servyr","WeekNum"))
-setnames(Murder,old = c("Date.x","Date.y"),new = c("Date","WeekDate"))
-
-Murder[,LatLongStart := regexpr("(",geocoded_column,fixed = TRUE)[1] + 1,by = rowid]
-Murder[,LatLongEnd := regexpr(")",geocoded_column,fixed = TRUE)[1] - 1,by = rowid]
-Murder[,LatLong := substr(geocoded_column,start = LatLongStart,stop = LatLongEnd)]
-Murder[,LatLongComma := regexpr(",",LatLong,fixed = TRUE)[1],by = rowid]
-Murder[,Latitude := substr(LatLong,start = 1,stop = LatLongComma - 1)]
-Murder[,Longitude := substr(LatLong,start = LatLongComma + 1,stop = 1000)]
-Murder[,Longitude := as.numeric(Longitude)]
-Murder[,Latitude := as.numeric(Latitude)]
-Murder[,Year := as.factor(servyr)]
-Murder$servyr <- NULL
-Murder <- Murder[!is.na(Latitude) & !is.na(Longitude) & !is.na(Date) & !is.na(Year),]
-
-Murder[,c("LatLongStart","LatLongEnd","LatLong","LatLongComma") := NULL]
-
-setnames(Murder,old = c("watch","offincident","comprace","compsex","compage","compethnicity","status","victimcond"),
-         c("Watch","Officer_Incident","Comp_Race","Comp_Sex","Comp_Age","Comp_Ethnicity","Status","Victim_Condition"))
+# 
+# Murder[,rowid := 1:.N]
+# Murder[,Date := as.Date(substr(date1,1,10))]
+# Murder[,MonthDate := as.Date(paste0(format(Date,"%Y-%m"),"-01"))]
+# Murder[,WeekNum := strftime(Date, format = "%V")]
+# Murder <- merge(Murder,Murder[,head(.SD, 1L),.SDcols = "Date",by = c("servyr","WeekNum")],by = c("servyr","WeekNum"))
+# setnames(Murder,old = c("Date.x","Date.y"),new = c("Date","WeekDate"))
+# 
+# Murder[,LatLongStart := regexpr("(",geocoded_column,fixed = TRUE)[1] + 1,by = rowid]
+# Murder[,LatLongEnd := regexpr(")",geocoded_column,fixed = TRUE)[1] - 1,by = rowid]
+# Murder[,LatLong := substr(geocoded_column,start = LatLongStart,stop = LatLongEnd)]
+# Murder[,LatLongComma := regexpr(",",LatLong,fixed = TRUE)[1],by = rowid]
+# Murder[,Latitude := substr(LatLong,start = 1,stop = LatLongComma - 1)]
+# Murder[,Longitude := substr(LatLong,start = LatLongComma + 1,stop = 1000)]
+# Murder[,Longitude := as.numeric(Longitude)]
+# Murder[,Latitude := as.numeric(Latitude)]
+# Murder[,Year := as.factor(servyr)]
+# Murder$servyr <- NULL
+# Murder <- Murder[!is.na(Latitude) & !is.na(Longitude) & !is.na(Date) & !is.na(Year),]
+# 
+# Murder[,c("LatLongStart","LatLongEnd","LatLong","LatLongComma") := NULL]
+# 
+# setnames(Murder,old = c("watch","offincident","comprace","compsex","compage","compethnicity","status","victimcond"),
+#          c("Watch","Officer_Incident","Comp_Race","Comp_Sex","Comp_Age","Comp_Ethnicity","Status","Victim_Condition"))
 
 columnChoices <- c("Year","Watch", "Officer_Incident", "Comp_Race", "Comp_Ethnicity", 
        "Comp_Sex", "Status","Victim_Condition")
@@ -65,6 +65,10 @@ ui <- fluidPage(
         column(12,titlePanel("Exploring Dallas Murders Since 2014"))
     ),
     fluidRow(
+        column(12,uiOutput("BottomHeader"))
+    ),
+    p(),
+    fluidRow(
         column(4,
             selectInput("FILTER_COLUMN", "Filter By:", choices = columnChoices,selected = "Year"),
             uiOutput("FILTER_VALUE"),
@@ -78,6 +82,8 @@ ui <- fluidPage(
     fluidRow(
         column(4,
                sliderInput('HIST_BINS', 'Histogram # Bins', min = 10, max = 50,value = 12),
+               textOutput('RefreshDate'),
+               p(),
                actionButton("RefreshData", "Refresh Data")
                ),
         column(8,plotOutput("hist"))
@@ -87,11 +93,18 @@ ui <- fluidPage(
 #shinyApp(ui = ui, server = server)
 
 # Define server logic required to draw a histogram
+url <- a("'Police Incidents'",
+         href="https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7")
+
 server <- function(input, output) {
+        
+    output$BottomHeader <- renderUI({
+        tagList("Based on Dallas Open Data source:", url, ". This is not a complete data set; it appears that a significant # of incidents are missing.")
+    })
     
     output$FILTER_VALUE <- renderUI({
         x <- MurderData$Murder %>% select(!!sym(input$FILTER_COLUMN)) %>% arrange(!!sym(input$FILTER_COLUMN))
-        selectInput("FILTER_VALUE", label = "Value", choices = c(x,"None"), selected = 'None')
+        selectInput("FILTER_VALUE", label = "Filter Value", choices = c(x,"None"), selected = 'None')
     })
     
 
@@ -113,7 +126,7 @@ server <- function(input, output) {
         }
     })
     
-    output$as_text <- renderText({
+    output$RefreshDate <- renderText({
         paste0("Latest Incident Date: ",max(MurderData$Murder$Date,na.rm = TRUE),"")
         # if (!is.null(input$FILTER_COLUMN) && !is.null(input$FILTER_VALUE)) {
         #     filtering_string()
@@ -122,10 +135,6 @@ server <- function(input, output) {
         # }
     })
     
-    # eventReactive(input$RefreshData,{
-    #     print("Refreshing")
-    #     MurderRefresh()
-    # })
     observeEvent(input$RefreshData,{
         print("Refreshing")
         MurderRefresh()
@@ -143,8 +152,8 @@ server <- function(input, output) {
         
         PI <- read.socrata(refreshString)
         setDT(PI)
-        NewMurder <- PI[grepl("NewMurder",offincident) | grepl("HOMICIDE",offincident) | grepl("NewMurder",ucr_offense) | 
-                         grepl("HOMICIDE",nibrs_crime_category) | grepl("NewMurder",nibrs_crime),]
+        NewMurder <- PI[grepl("Murder",offincident) | grepl("HOMICIDE",offincident) | grepl("Murder",ucr_offense) | 
+                         grepl("HOMICIDE",nibrs_crime_category) | grepl("Murder",nibrs_crime),]
         
         
         if (nrow(NewMurder) > 0) {
@@ -178,6 +187,8 @@ server <- function(input, output) {
     
     output$SummaryTable <- renderTable({
         eval(parse(text = SummaryTableString()))
+        #setorder(SummaryTable,input$COLOR_COLUMN)
+        #SummaryTable
     })
     
     filtered_table <- reactive({
@@ -306,6 +317,9 @@ server <- function(input, output) {
                                              "<BR> Victim Age: ",Comp_Age,
                                              "<BR> Victim Race: ",Comp_Race,
                                              "<BR> Victim Condition: ",Victim_Condition,
+                                             "<BR> Victim Injury: ",victiminjurydesc,
+                                             "<BR> Off. Incident: ",Officer_Incident,
+                                             "<BR> Signal: ",signal,
                                              "<BR> MO: ",mo))
         
         
@@ -313,101 +327,14 @@ server <- function(input, output) {
     
     
     output$hist <- renderPlot({
-
-        if (!is.null(input$FILTER_COLUMN) && input$FILTER_VALUE != 'None' &&
-            !is.null(input$FILTER_VALUE) && nchar(input$FILTER_COLUMN) > 0 && nchar(input$FILTER_VALUE) > 0) {
-
-            #print(paste0("Murder %>% filter(",input$COLUMN," == '",input$VALUE,
-            #             "') %>% pull(MonthDate)"))
-
-            vect <- eval(parse(text = paste0("Murder %>% filter(",input$FILTER_COLUMN," == '",input$FILTER_VALUE,
-                                             "') %>% pull(MonthDate)")))
-
-        } else {
-            vect <- Murder$MonthDate
-        }
-
-        #print(vect)
-        #if (is.numeric(vect)) {
-
-            bins <- seq(min(vect), max(vect), length.out = input$HIST_BINS + 1)
-            hist <- tryCatch(
-                        hist(vect, breaks = bins, col = "#75AADB", xlab = NULL, #border = "white",
-                            ylab = "# Murders (filtered)",
-                            main = "Histogram of Filtered Murders"),
-                        error = function(e) {
-                            vect <- Murder[,MonthDate]
-                            bins <- seq(min(vect), max(vect), length.out = input$HIST_BINS + 1)
-                            hist(vect, breaks = bins, col = "#75AADB", xlab = NULL, #border = "white",
-                                 ylab = "# Murders (filtered)",
-                                 main = "Histogram of Filtered Murders")
-                        })
-
+        
+        ggplot(filtered_table(),aes(x = Date)) + geom_histogram(bins = input$HIST_BINS,colour='red',size = 1) + 
+                stat_bin(bins = input$HIST_BINS,geom="text", colour="black", size=5.5,aes(label=..count..),
+                position = position_stack(vjust = 1.15))
+        
     }, height = 200)
     
 }
 
 # Run the application 
 shinyApp(ui = ui, server = server)
-
-# input <- list()
-# input$FILTER_COLUMN <- "servyr"
-# input$FILTER_VALUE <- "None"
-# input$COLOR_COLUMN <- "watch"
-# input$MarkerSize <- 2
-# filterPiece <- ""
-# colors <- eval(parse(text = paste0("Murder %>% ",filterPiece,"pull(",input$COLOR_COLUMN,")")))
-# 
-# map <- eval(parse(text = paste0("ggmap(DallasZoom11,extent = 'device') + geom_point(data = Murder, aes(x = Longitude, y = Latitude,fill = as.factor(",input$COLOR_COLUMN,")),size = ",input$MarkerSize,",color = 'black',stroke = 1,shape = 21) + labs(fill = '",input$COLOR_COLUMN,"')")))
-# print(map)
-
-
-# output$Map <- renderPlot({
-#     
-#     conditions <- rep(FALSE,5)
-#     conditions[1] <- !is.null(input$FILTER_COLUMN)
-#     conditions[2] <- !is.null(input$FILTER_VALUE)
-#     conditions[3] <- !is.null(input$COLOR_COLUMN)
-#     conditions[4] <- nchar(input$FILTER_VALUE) > 0
-#     conditions[5] <- ifelse(!is.null(input$FILTER_VALUE),input$FILTER_VALUE != 'None',FALSE)
-#     
-#     filterPiece <- ""
-#     if (all(conditions)) {
-#         filterPiece <- paste0("filter(",input$FILTER_COLUMN," == '",input$FILTER_VALUE,"') %>% ")
-#         #print(filterPiece)
-#     }
-#     
-#     if (!is.null(input$COLOR_COLUMN) && input$COLOR_COLUMN != 'None') {
-#         
-#         colors <- eval(parse(text = paste0("Murder %>% ",filterPiece,"pull(",input$COLOR_COLUMN,")")))
-#         
-#         if (length(unique(colors)) > 25) {
-#             NoColor <- TRUE
-#         } else {
-#             NoColor <- FALSE
-#         }
-#         
-#     }
-#     
-#     #cat("\n","No COLOR",NoColor)
-#     
-#     if (NoColor == FALSE) {
-#         mapString <- paste0(
-#             "ggmap(DallasZoom11,extent = 'device') + geom_point(data = filtered_table(), aes(x = Longitude, y = Latitude,fill = as.factor(",
-#             input$COLOR_COLUMN,")),size = ",input$MarkerSize,",color = 'black',stroke = 1,shape = 21) + labs(fill = '",
-#             input$COLOR_COLUMN,"')")
-#         
-#         #print(mapString)
-#         map <- eval(parse(text = mapString))
-#         
-#     } else {
-#         
-#         map <- ggmap(DallasZoom11,extent = "device") + 
-#             geom_point(data = filtered_table(), aes(x = Longitude, y = Latitude),fill = "gray",
-#                        size = input$MarkerSize,color = "black",stroke = 1,shape = 21)
-#         
-#     }
-#     
-#     print(map)
-#     
-# })

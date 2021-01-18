@@ -57,7 +57,7 @@ ui <- fluidPage(
                      mainPanel(
                          leafletOutput("LeafletMap",height = 700)
                         )
-                     ),
+                     )
                  ),
         tabPanel("Plot",mainPanel(
                  plotOutput("YearlyPlot"),
