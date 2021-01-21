@@ -7,28 +7,14 @@ library(leaflet)
 library(RSocrata)
 
 
-# drop_read_rds <- function(file, dest = tempdir(), dtoken = get_dropbox_token(), ...) {
-#      localfile = paste0(dest, "/", basename(file))
-#      drop_download(file, local_path = localfile, overwrite = TRUE, dtoken = dtoken)
-#      readRDS(localfile, ...)
-# }
-
-
 token <- readRDS("droptoken.rds")
 
 drop_download(path = "Shiny/Murder.RDS",local_path =  paste0(tempdir(), "/MurderData.RDS"),overwrite = TRUE, dtoken = token)
 Murder <- readRDS(paste0(tempdir(), "/MurderData.RDS"))
 
-
 columnChoices <- c("Year","Watch", "Beat", "Officer_Incident", "Comp_Race", "Comp_Ethnicity", 
-       "Comp_Sex", "Status","Victim_Condition")
+       "Comp_Sex", "Status","Victim_Condition", "NumPerYear")
 
-LegendPal <- colorFactor(
-    #colorNumeric(
-    palette = 'Spectral', #alpha = TRUE,
-    #levels = unique(Murder$Year)
-    domain = NULL
-)
 
 MurderRefresh <- function(Murder) {
     
@@ -67,6 +53,9 @@ MurderRefresh <- function(Murder) {
         setnames(NewMurder,old = c("beat","watch","offincident","comprace","compsex","compage","compethnicity","status","victimcond"),
                  c("Beat","Watch","Officer_Incident","Comp_Race","Comp_Sex","Comp_Age","Comp_Ethnicity","Status","Victim_Condition"))
         Murder <- rbindlist(list(Murder,NewMurder),use.names = TRUE,fill = TRUE)
+        setorder(Murder,Date)
+        Murder[,NumPerYear := 1:.N,by = Year]
+        
     }
     #print(max(Murder$Date,na.rm = TRUE))
     Murder
@@ -74,8 +63,7 @@ MurderRefresh <- function(Murder) {
 
 ui <- fluidPage(
     fluidRow(
-        column(12,titlePanel(p("Exploring Dallas Murders.  An R-Shiny app by ",
-                               a("Sean Conroy",href ='https://www.seantconroy.com/'))))
+        column(12,titlePanel("Exploring Dallas Murders"))
     ),
     fluidRow(
         column(12,uiOutput("BottomHeader"))
@@ -100,19 +88,45 @@ ui <- fluidPage(
                actionButton("RefreshData", "Refresh Data")
                ),
         column(8,plotOutput("hist"))
-        )
+        ),
+    fluidRow(
+        column(12,p("Exploring Dallas Murders.  An R-Shiny app by ",
+                   a("Sean Conroy",href ='https://www.seantconroy.com/')))
+    )
+    
 )
 
-shinyApp(ui = ui, server = server)
+#shinyApp(ui = ui, server = server)
 
 # Define server logic required to draw a histogram
 url <- a("'Police Incidents'",
          href="https://www.dallasopendata.com/Public-Safety/Police-Incidents/qv6i-rri7")
 
+
+LegendPal <- colorFactor(
+        #colorNumeric(
+        palette = 'Spectral', #alpha = TRUE,
+        #levels = unique(Murder$Year)
+        domain = NULL
+)
+
 server <- function(input, output) {
     
     MurderData <- reactiveValues()
     MurderData$Murder <- Murder
+
+
+    pal <- reactive({
+        #x <- Murder[,unique(get(input$COLOR_COLUMN))]
+        #print(Murder[,unique(get(input$COLOR_COLUMN))])
+        colorFactor(
+            #colorNumeric(
+            palette = 'Spectral', #alpha = TRUE,
+            #levels = unique(Murder$Year)
+            domain = NULL #Murder$Year
+        )
+    })
+    
     
     output$BottomHeader <- renderUI({
         tagList("Based on Dallas Open Data source:", url,
@@ -184,20 +198,6 @@ server <- function(input, output) {
         }
     })
     
-
-
-    pal <- reactive({
-        #x <- Murder[,unique(get(input$COLOR_COLUMN))]
-        #print(Murder[,unique(get(input$COLOR_COLUMN))])
-        colorFactor(
-            #colorNumeric(
-            palette = 'Spectral', #alpha = TRUE,
-            #levels = unique(Murder$Year)
-            domain = NULL #Murder$Year
-        )
-    })
-    
-
     output$LeafletMap <- renderLeaflet({
         
         w <- 1
@@ -216,7 +216,20 @@ server <- function(input, output) {
                                 pal = LegendPal, values = ~Year,
                                 title = "Legend",
                                 opacity = 1)
+            
+        } else if (input$COLOR_COLUMN == "NumPerYear") {
                 
+                #print(filtered_table()$Date)
+                
+                theMap <- theMap %>% 
+                    addCircleMarkers(lng = ~Longitude, lat = ~Latitude, weight = w, radius = input$MarkerSize,
+                                     fillOpacity = fOp,fillColor = ~pal()(NumPerYear)) %>%
+                    addLegend(position = "bottomleft",
+                              pal = LegendPal, values = ~NumPerYear,
+                              title = "Legend",
+                              opacity = 1)
+                
+
          } else if (input$COLOR_COLUMN == "Watch") {
             
             theMap <- theMap %>%  
