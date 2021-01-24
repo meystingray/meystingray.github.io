@@ -112,4 +112,4 @@ ggplot(combined,aes(x = Date)) + geom_point(aes(y = `# Per Month`,color = Crime)
 
 ```
 
-Wow.  Looks like a crime types across the board are trending up.
+Wow.  Looks like crime across the board is trending up.
