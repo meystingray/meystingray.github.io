@@ -23,143 +23,32 @@ PI[,MonthDate := as.Date(paste0(format(Date,&quot;%Y-%m&quot;),&quot;-01&quot;))
 PI[grepl(&quot;MURDER&quot;,offincident) | grepl(&quot;HOMICIDE&quot;,offincident) | grepl(&quot;MURDER&quot;,ucr_offense) | 
      grepl(&quot;HOMICIDE&quot;,nibrs_crime_category) | grepl(&quot;MURDER&quot;,nibrs_crime),NumMurdersPerMonth := .N,by = MonthDate]
 
-PI[,NumMurdersPerMonth := max(NumMurdersPerMonth,na.rm = TRUE),by = MonthDate]
+PI[,NumMurdersPerMonth := mean(NumMurdersPerMonth,na.rm = TRUE),by = MonthDate]
 
 
 PI[grepl(&quot;DRUG&quot;,offincident),NumDrugsPerMonth := .N,by = MonthDate]
 
-PI[,NumDrugsPerMonth := max(NumDrugsPerMonth,na.rm = TRUE),by = MonthDate]</code></pre>
-<pre><code>## Warning in max(NumDrugsPerMonth, na.rm = TRUE): no non-missing arguments to max;
-## returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumDrugsPerMonth, max(NumDrugsPerMonth, :
-## Group 4 column &#39;NumDrugsPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre class="r"><code>PI[grepl(&quot;KIDNAP&quot;,offincident),NumKidnapPerMonth := .N,by = MonthDate]
+PI[,NumDrugsPerMonth := mean(NumDrugsPerMonth,na.rm = TRUE),by = MonthDate]
 
-PI[,NumKidnapPerMonth := max(NumKidnapPerMonth,na.rm = TRUE),by = MonthDate]</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 1 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 5 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 7 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 8 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 9 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 10 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 13 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 14 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 17 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 18 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 22 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 23 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 24 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 32 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 34 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 35 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 36 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 41 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 42 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 45 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 47 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre><code>## Warning in max(NumKidnapPerMonth, na.rm = TRUE): no non-missing arguments to
-## max; returning -Inf</code></pre>
-<pre><code>## Warning in `[.data.table`(PI, , `:=`(NumKidnapPerMonth, max(NumKidnapPerMonth, :
-## Group 80 column &#39;NumKidnapPerMonth&#39;: -inf (type &#39;double&#39;) at RHS position 1
-## truncated (precision lost) when assigning to type &#39;integer&#39;</code></pre>
-<pre class="r"><code>PI[grepl(&quot;ACCIDENT&quot;,offincident),NumAccidentsPerMonth := .N,by = MonthDate]
 
-PI[,NumAccidentsPerMonth := max(NumAccidentsPerMonth,na.rm = TRUE),by = MonthDate]
+PI[grepl(&quot;KIDNAP&quot;,offincident),NumKidnapPerMonth := .N,by = MonthDate]
+
+PI[,NumKidnapPerMonth := mean(NumKidnapPerMonth,na.rm = TRUE),by = MonthDate]
+
+
+PI[grepl(&quot;ACCIDENT&quot;,offincident),NumAccidentsPerMonth := .N,by = MonthDate]
+
+PI[,NumAccidentsPerMonth := mean(NumAccidentsPerMonth,na.rm = TRUE),by = MonthDate]
 
 
 PI[grepl(&quot;ASSAULT&quot;,offincident),NumAssaultsPerMonth := .N,by = MonthDate]
 
-PI[,NumAssaultsPerMonth := max(NumAssaultsPerMonth,na.rm = TRUE),by = MonthDate]
+PI[,NumAssaultsPerMonth := mean(NumAssaultsPerMonth,na.rm = TRUE),by = MonthDate]
 
 
 PI[grepl(&quot;THEFT&quot;,offincident),NumTheftsPerMonth := .N,by = MonthDate]
 
-PI[,NumTheftsPerMonth := max(NumTheftsPerMonth,na.rm = TRUE),by = MonthDate]</code></pre>
+PI[,NumTheftsPerMonth := mean(NumTheftsPerMonth,na.rm = TRUE),by = MonthDate]</code></pre>
 <p>Pivot in preparation to plot:</p>
 <pre class="r"><code>combined &lt;- PI[,head(.SD,1),
                .SDcols = c(&quot;NumMurdersPerMonth&quot;,&quot;NumAssaultsPerMonth&quot;,&quot;NumKidnapPerMonth&quot;,
@@ -174,8 +63,7 @@ combined &lt;- melt(combined,
              id.vars = c(&quot;MonthDate&quot;))</code></pre>
 <p>Now finally plot the data:</p>
 <pre class="r"><code>ggplot(combined,aes(x = MonthDate)) + geom_point(aes(y = value,color = variable)) +
-  geom_smooth(aes(y = value,color = variable),method = &quot;loess&quot;,formula = y ~ x,n = 50) + #lm, glm, gam, loess
+  geom_smooth(aes(y = value,color = variable),method = &quot;loess&quot;,formula = y ~ x,n = 50,na.rm = TRUE) +
   facet_wrap(~variable,scales = &quot;free&quot;) + theme(legend.position = &quot;none&quot;)</code></pre>
-<pre><code>## Warning: Removed 22 rows containing non-finite values (stat_smooth).</code></pre>
 <pre><code>## Warning: Removed 22 rows containing missing values (geom_point).</code></pre>
 <p><img src="index_files/figure-html/Plot%20the%20Data-1.png" width="672" /></p>

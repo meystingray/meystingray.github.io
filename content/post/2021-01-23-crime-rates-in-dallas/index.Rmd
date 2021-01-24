@@ -38,32 +38,32 @@ PI[,MonthDate := as.Date(paste0(format(Date,"%Y-%m"),"-01"))]
 PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident) | grepl("MURDER",ucr_offense) | 
      grepl("HOMICIDE",nibrs_crime_category) | grepl("MURDER",nibrs_crime),NumMurdersPerMonth := .N,by = MonthDate]
 
-PI[,NumMurdersPerMonth := max(NumMurdersPerMonth,na.rm = TRUE),by = MonthDate]
+PI[,NumMurdersPerMonth := mean(NumMurdersPerMonth,na.rm = TRUE),by = MonthDate]
 
 
 PI[grepl("DRUG",offincident),NumDrugsPerMonth := .N,by = MonthDate]
 
-PI[,NumDrugsPerMonth := max(NumDrugsPerMonth,na.rm = TRUE),by = MonthDate]
+PI[,NumDrugsPerMonth := mean(NumDrugsPerMonth,na.rm = TRUE),by = MonthDate]
 
 
 PI[grepl("KIDNAP",offincident),NumKidnapPerMonth := .N,by = MonthDate]
 
-PI[,NumKidnapPerMonth := max(NumKidnapPerMonth,na.rm = TRUE),by = MonthDate]
+PI[,NumKidnapPerMonth := mean(NumKidnapPerMonth,na.rm = TRUE),by = MonthDate]
 
 
 PI[grepl("ACCIDENT",offincident),NumAccidentsPerMonth := .N,by = MonthDate]
 
-PI[,NumAccidentsPerMonth := max(NumAccidentsPerMonth,na.rm = TRUE),by = MonthDate]
+PI[,NumAccidentsPerMonth := mean(NumAccidentsPerMonth,na.rm = TRUE),by = MonthDate]
 
 
 PI[grepl("ASSAULT",offincident),NumAssaultsPerMonth := .N,by = MonthDate]
 
-PI[,NumAssaultsPerMonth := max(NumAssaultsPerMonth,na.rm = TRUE),by = MonthDate]
+PI[,NumAssaultsPerMonth := mean(NumAssaultsPerMonth,na.rm = TRUE),by = MonthDate]
 
 
 PI[grepl("THEFT",offincident),NumTheftsPerMonth := .N,by = MonthDate]
 
-PI[,NumTheftsPerMonth := max(NumTheftsPerMonth,na.rm = TRUE),by = MonthDate]
+PI[,NumTheftsPerMonth := mean(NumTheftsPerMonth,na.rm = TRUE),by = MonthDate]
 
 ```
 
@@ -90,7 +90,7 @@ Now finally plot the data:
 ```{r Plot the Data,echo = TRUE}
 
 ggplot(combined,aes(x = MonthDate)) + geom_point(aes(y = value,color = variable)) +
-  geom_smooth(aes(y = value,color = variable),method = "loess",formula = y ~ x,n = 50) + #lm, glm, gam, loess
+  geom_smooth(aes(y = value,color = variable),method = "loess",formula = y ~ x,n = 50,na.rm = TRUE) +
   facet_wrap(~variable,scales = "free") + theme(legend.position = "none")
 
 
