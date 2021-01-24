@@ -24,7 +24,9 @@ PI[,rowid := 1:.N]
 ```
 
 
+
 First, let's calculate the Crime Rates:
+
 ```{r Calculate Rates,echo = TRUE}
 
 PI[,Date := as.Date(substr(date1,1,10))]
@@ -41,8 +43,8 @@ PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident) | grepl("MURDER",
 
 PI[,NumMurdersPerMonth := mean(NumMurdersPerMonth,na.rm = TRUE),by = MonthDate]
 
-
-PI[grepl("DRUG",offincident),NumDrugsPerMonth := .N,by = MonthDate]
+PI[grepl("SUBSTANCE",offincident) | grepl("MARIJUANA",offincident) | grepl("DRUG",offincident),
+   NumDrugsPerMonth := .N,by = MonthDate]
 
 PI[,NumDrugsPerMonth := mean(NumDrugsPerMonth,na.rm = TRUE),by = MonthDate]
 
@@ -69,7 +71,9 @@ PI[,NumTheftsPerMonth := mean(NumTheftsPerMonth,na.rm = TRUE),by = MonthDate]
 ```
 
 
+
 Pivot in preparation to plot:
+
 ```{r Pivot and Plot, echo = TRUE}
 combined <- PI[,head(.SD,1),
                .SDcols = c("NumMurdersPerMonth","NumAssaultsPerMonth","NumKidnapPerMonth",
@@ -88,7 +92,8 @@ combined <- melt(combined,
 
 
 Now finally plot the data:
-```{r Plot the Data,echo = TRUE}
+
+```{r Plot the Data,echo = TRUE, fig.width=4,fig.height=3}
 
 ggplot(combined,aes(x = MonthDate)) + geom_point(aes(y = value,color = variable),na.rm = TRUE) +
   geom_smooth(aes(y = value,color = variable),method = "loess",formula = y ~ x,n = 50,na.rm = TRUE) +
