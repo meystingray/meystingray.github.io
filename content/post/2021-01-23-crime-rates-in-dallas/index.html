@@ -56,6 +56,7 @@ PI[,NumTheftsPerMonth := mean(NumTheftsPerMonth,na.rm = TRUE),by = MonthDate]</c
                            &quot;NumTheftsPerMonth&quot;,&quot;NumAccidentsPerMonth&quot;,&quot;NumDrugsPerMonth&quot;),
                by = MonthDate]
 
+# Remove falsely low month aggregated values since the month is not yet complete.
 combined &lt;- combined[MonthDate &lt; as.Date(&quot;2021-01-01&quot;)]
 
 combined &lt;- melt(combined,
@@ -63,7 +64,9 @@ combined &lt;- melt(combined,
                                   &quot;NumAccidentsPerMonth&quot;,&quot;NumDrugsPerMonth&quot;,&quot;NumKidnapPerMonth&quot;),
              id.vars = c(&quot;MonthDate&quot;))</code></pre>
 <p>Now finally plot the data:</p>
-<pre class="r"><code>ggplot(combined,aes(x = MonthDate)) + geom_point(aes(y = value,color = variable),na.rm = TRUE) +
-  geom_smooth(aes(y = value,color = variable),method = &quot;loess&quot;,formula = y ~ x,n = 50,na.rm = TRUE) +
-  facet_wrap(~variable,scales = &quot;free&quot;) + theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="index_files/figure-html/Plot%20the%20Data-1.png" width="864" /></p>
+<pre class="r"><code>setnames(combined,old = names(combined),new = c(&quot;Date&quot;,&quot;Crime&quot;,&quot;# Per Month&quot;))
+
+ggplot(combined,aes(x = Date)) + geom_point(aes(y = `# Per Month`,color = Crime),na.rm = TRUE) +
+  geom_smooth(aes(y = `# Per Month`,color = Crime),method = &quot;loess&quot;,formula = y ~ x,n = 50,na.rm = TRUE) + 
+  facet_wrap(~Crime,scales = &quot;free&quot;) + theme(legend.position = &quot;none&quot;)</code></pre>
+<p><img src="index_files/figure-html/Plot%20the%20Data-1.png" width="960" /></p>

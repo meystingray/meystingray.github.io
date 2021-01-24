@@ -80,6 +80,7 @@ combined <- PI[,head(.SD,1),
                            "NumTheftsPerMonth","NumAccidentsPerMonth","NumDrugsPerMonth"),
                by = MonthDate]
 
+# Remove falsely low month aggregated values since the month is not yet complete.
 combined <- combined[MonthDate < as.Date("2021-01-01")]
 
 combined <- melt(combined,
@@ -93,11 +94,13 @@ combined <- melt(combined,
 
 Now finally plot the data:
 
-```{r Plot the Data,echo = TRUE, fig.width=9,fig.height=6}
+```{r Plot the Data,echo = TRUE, fig.width = 10,fig.height = 6}
 
-ggplot(combined,aes(x = MonthDate)) + geom_point(aes(y = value,color = variable),na.rm = TRUE) +
-  geom_smooth(aes(y = value,color = variable),method = "loess",formula = y ~ x,n = 50,na.rm = TRUE) +
-  facet_wrap(~variable,scales = "free") + theme(legend.position = "none")
+setnames(combined,old = names(combined),new = c("Date","Crime","# Per Month"))
+
+ggplot(combined,aes(x = Date)) + geom_point(aes(y = `# Per Month`,color = Crime),na.rm = TRUE) +
+  geom_smooth(aes(y = `# Per Month`,color = Crime),method = "loess",formula = y ~ x,n = 50,na.rm = TRUE) + 
+  facet_wrap(~Crime,scales = "free") + theme(legend.position = "none")
 
 
 ```
