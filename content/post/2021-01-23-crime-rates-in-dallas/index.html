@@ -21,7 +21,8 @@ PI[,MonthDate := as.Date(paste0(format(Date,&quot;%Y-%m&quot;),&quot;-01&quot;))
 
 
 PI[grepl(&quot;MURDER&quot;,offincident) | grepl(&quot;HOMICIDE&quot;,offincident) | grepl(&quot;MURDER&quot;,ucr_offense) | 
-     grepl(&quot;HOMICIDE&quot;,nibrs_crime_category) | grepl(&quot;MURDER&quot;,nibrs_crime),NumMurdersPerMonth := .N,by = MonthDate]
+     grepl(&quot;HOMICIDE&quot;,nibrs_crime_category) | grepl(&quot;MURDER&quot;,nibrs_crime),
+   NumMurdersPerMonth := .N,by = MonthDate]
 
 PI[,NumMurdersPerMonth := mean(NumMurdersPerMonth,na.rm = TRUE),by = MonthDate]
 
@@ -62,8 +63,7 @@ combined &lt;- melt(combined,
                                   &quot;NumAccidentsPerMonth&quot;,&quot;NumDrugsPerMonth&quot;,&quot;NumKidnapPerMonth&quot;),
              id.vars = c(&quot;MonthDate&quot;))</code></pre>
 <p>Now finally plot the data:</p>
-<pre class="r"><code>ggplot(combined,aes(x = MonthDate)) + geom_point(aes(y = value,color = variable)) +
+<pre class="r"><code>ggplot(combined,aes(x = MonthDate)) + geom_point(aes(y = value,color = variable),na.rm = TRUE) +
   geom_smooth(aes(y = value,color = variable),method = &quot;loess&quot;,formula = y ~ x,n = 50,na.rm = TRUE) +
   facet_wrap(~variable,scales = &quot;free&quot;) + theme(legend.position = &quot;none&quot;)</code></pre>
-<pre><code>## Warning: Removed 22 rows containing missing values (geom_point).</code></pre>
 <p><img src="index_files/figure-html/Plot%20the%20Data-1.png" width="672" /></p>
