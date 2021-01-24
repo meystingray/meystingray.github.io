@@ -62,11 +62,19 @@ combined &lt;- combined[MonthDate &lt; as.Date(&quot;2021-01-01&quot;)]
 combined &lt;- melt(combined,
                  measure.vars = c(&quot;NumMurdersPerMonth&quot;,&quot;NumAssaultsPerMonth&quot;,&quot;NumTheftsPerMonth&quot;,
                                   &quot;NumAccidentsPerMonth&quot;,&quot;NumDrugsPerMonth&quot;,&quot;NumKidnapPerMonth&quot;),
-             id.vars = c(&quot;MonthDate&quot;))</code></pre>
-<p>Now finally plot the data:</p>
-<pre class="r"><code>setnames(combined,old = names(combined),new = c(&quot;Date&quot;,&quot;Crime&quot;,&quot;# Per Month&quot;))
+             id.vars = c(&quot;MonthDate&quot;))
 
-ggplot(combined,aes(x = Date)) + geom_point(aes(y = `# Per Month`,color = Crime),na.rm = TRUE) +
+combined[variable == &quot;NumMurdersPerMonth&quot;,variable := &quot;# Murders Per Month&quot;]
+combined[variable == &quot;NumAssaultsPerMonth&quot;,variable := &quot;# Assaults Per Month&quot;]
+combined[variable == &quot;NumTheftsPerMonth&quot;,variable := &quot;# Thefts Per Month&quot;]
+combined[variable == &quot;NumAccidentsPerMonth&quot;,variable := &quot;# Vehicle Accidents Per Month&quot;]
+combined[variable == &quot;NumDrugsPerMonth&quot;,variable := &quot;# Drug Incidents Per Month&quot;]
+combined[variable == &quot;NumKidnapPerMonth&quot;,variable := &quot;# Kidnapping Incidents Per Month&quot;]
+
+setnames(combined,old = names(combined),new = c(&quot;Date&quot;,&quot;Crime&quot;,&quot;# Per Month&quot;))</code></pre>
+<p>Now finally plot the data:</p>
+<pre class="r"><code>ggplot(combined,aes(x = Date)) + geom_point(aes(y = `# Per Month`,color = Crime),na.rm = TRUE) +
   geom_smooth(aes(y = `# Per Month`,color = Crime),method = &quot;loess&quot;,formula = y ~ x,n = 50,na.rm = TRUE) + 
   facet_wrap(~Crime,scales = &quot;free&quot;) + theme(legend.position = &quot;none&quot;)</code></pre>
 <p><img src="index_files/figure-html/Plot%20the%20Data-1.png" width="960" /></p>
+<p>Wow. Looks like a crime types across the board are trending up.</p>

@@ -88,6 +88,15 @@ combined <- melt(combined,
                                   "NumAccidentsPerMonth","NumDrugsPerMonth","NumKidnapPerMonth"),
              id.vars = c("MonthDate"))
 
+combined[variable == "NumMurdersPerMonth",variable := "# Murders Per Month"]
+combined[variable == "NumAssaultsPerMonth",variable := "# Assaults Per Month"]
+combined[variable == "NumTheftsPerMonth",variable := "# Thefts Per Month"]
+combined[variable == "NumAccidentsPerMonth",variable := "# Vehicle Accidents Per Month"]
+combined[variable == "NumDrugsPerMonth",variable := "# Drug Incidents Per Month"]
+combined[variable == "NumKidnapPerMonth",variable := "# Kidnapping Incidents Per Month"]
+
+setnames(combined,old = names(combined),new = c("Date","Crime","# Per Month"))
+
 ```
 
 
@@ -96,11 +105,11 @@ Now finally plot the data:
 
 ```{r Plot the Data,echo = TRUE, fig.width = 10,fig.height = 6}
 
-setnames(combined,old = names(combined),new = c("Date","Crime","# Per Month"))
-
 ggplot(combined,aes(x = Date)) + geom_point(aes(y = `# Per Month`,color = Crime),na.rm = TRUE) +
   geom_smooth(aes(y = `# Per Month`,color = Crime),method = "loess",formula = y ~ x,n = 50,na.rm = TRUE) + 
   facet_wrap(~Crime,scales = "free") + theme(legend.position = "none")
 
 
 ```
+
+Wow.  Looks like a crime types across the board are trending up.
