@@ -66,4 +66,4 @@ combined &lt;- melt(combined,
 <pre class="r"><code>ggplot(combined,aes(x = MonthDate)) + geom_point(aes(y = value,color = variable),na.rm = TRUE) +
   geom_smooth(aes(y = value,color = variable),method = &quot;loess&quot;,formula = y ~ x,n = 50,na.rm = TRUE) +
   facet_wrap(~variable,scales = &quot;free&quot;) + theme(legend.position = &quot;none&quot;)</code></pre>
-<p><img src="index_files/figure-html/Plot%20the%20Data-1.png" width="384" /></p>
+<p><img src="index_files/figure-html/Plot%20the%20Data-1.png" width="864" /></p>

@@ -93,7 +93,7 @@ combined <- melt(combined,
 
 Now finally plot the data:
 
-```{r Plot the Data,echo = TRUE, fig.width=4,fig.height=3}
+```{r Plot the Data,echo = TRUE, fig.width=9,fig.height=6}
 
 ggplot(combined,aes(x = MonthDate)) + geom_point(aes(y = value,color = variable),na.rm = TRUE) +
   geom_smooth(aes(y = value,color = variable),method = "loess",formula = y ~ x,n = 50,na.rm = TRUE) +
