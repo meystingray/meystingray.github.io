@@ -5,8 +5,10 @@ library(dplyr)
 library(shiny)
 library(leaflet)
 library(RSocrata)
+library(shinyWidgets)
+library(leaflet.extras)
 
-
+#setwd("C:/Users/sconroy/Documents/meystingray.github.io/ShinyMurderMap")
 token <- readRDS("droptoken.rds")
 
 drop_download(path = "Shiny/Murder.RDS",local_path =  paste0(tempdir(), "/MurderData.RDS"),overwrite = TRUE, dtoken = token)
@@ -75,7 +77,9 @@ ui <- fluidPage(
             uiOutput("FILTER_VALUE"),
             selectInput("COLOR_COLUMN", "Color By:", choices = columnChoices,selected = "Year"),
             sliderInput('MarkerSize', 'Marker Size', min = 1, max = 10,value = 5),
-            sliderInput('NumClusters', '# Clusters \n (reduce Marker Size to view)', min = 0, max = 30,value = 5)
+            sliderInput('NumClusters', '# Clusters \n (reduce Marker Size to view)', min = 0, max = 30,value = 5),
+            strong("Show Heat Map:"),
+            switchInput(inputId = "ShowHeatMap",label = NULL,value = FALSE)
         ),
         column(6,leafletOutput("LeafletMap")),
         column(2,tableOutput("SummaryTable"))
@@ -85,14 +89,17 @@ ui <- fluidPage(
                sliderInput('HIST_BINS', 'Histogram # Bins', min = 10, max = 50,value = 12),
                textOutput('RefreshDate'),
                p(),
-               actionButton("RefreshData", "Refresh Data")
+               actionButton("RefreshData", "Refresh Data"),
+               p(),
+               strong(em("'Exploring Dallas Murders'"),p(),"an R-Shiny app by ",
+                                a("Sean Conroy",href ='https://www.seantconroy.com/'))
                ),
         column(8,plotOutput("hist"))
         ),
-    fluidRow(
-        column(12,p("Exploring Dallas Murders.  An R-Shiny app by ",
-                   a("Sean Conroy",href ='https://www.seantconroy.com/')))
-    )
+    #fluidRow(
+    #    column(12,strong("Exploring Dallas Murders.  An R-Shiny app by ",
+    #               a("Sean Conroy",href ='https://www.seantconroy.com/')))
+    #)
     
 )
 
@@ -138,6 +145,7 @@ server <- function(input, output) {
         selectInput("FILTER_VALUE", label = "Filter Value", choices = c(x,"None"), selected = 'None')
     })
     
+    output$ShowHeatMap <- renderPrint({ input$ShowHeatMap })
 
     filtering_string <- reactive ({
     
@@ -312,21 +320,7 @@ server <- function(input, output) {
              
          }
         
-        theMap <- theMap %>%
-            addCircleMarkers(lng = ~Longitude, lat = ~Latitude, weight = 0, radius = input$MarkerSize,
-                             fillOpacity = 0,
-                             popup = ~paste0("Incident Date: ",Date,
-                                             "<BR> Beat: ",Beat,
-                                             "<BR> Incident Address: ",incident_address,
-                                             "<BR> Victim Sex: ",Comp_Sex,
-                                             "<BR> Victim Age: ",Comp_Age,
-                                             "<BR> Victim Race: ",Comp_Race,
-                                             "<BR> Victim Condition: ",Victim_Condition,
-                                             "<BR> Victim Injury: ",victiminjurydesc,
-                                             "<BR> Off. Incident: ",Officer_Incident,
-                                             "<BR> Signal: ",signal,
-                                             "<BR> MO: ",mo))
-        
+
         if (input$NumClusters > 0) {
             #KM <- kmeans(Murder[!is.na(Latitude) & !is.na(Longitude),.(Latitude,Longitude)],centers = 12)
             #print(sizeVect)
@@ -342,7 +336,31 @@ server <- function(input, output) {
             
         }
         
+        if (input$ShowHeatMap == TRUE) {
+            
+            theMap <- theMap %>% addHeatmap(lng = ~Longitude, lat = ~Latitude, intensity = NULL,
+                    layerId = NULL, group = NULL, minOpacity = 0, max = 0.1,
+                        radius = 7, blur = 15, gradient = NULL, cellSize = 5)
+        }
+        
+        
+        theMap <- theMap %>%
+            addCircleMarkers(lng = ~Longitude, lat = ~Latitude, weight = 0, radius = input$MarkerSize,
+                             fillOpacity = 0,
+                             popup = ~paste0("Incident Date: ",Date,
+                                             "<BR> Beat: ",Beat,
+                                             "<BR> Incident Address: ",incident_address,
+                                             "<BR> Victim Sex: ",Comp_Sex,
+                                             "<BR> Victim Age: ",Comp_Age,
+                                             "<BR> Victim Race: ",Comp_Race,
+                                             "<BR> Victim Condition: ",Victim_Condition,
+                                             "<BR> Victim Injury: ",victiminjurydesc,
+                                             "<BR> Off. Incident: ",Officer_Incident,
+                                             "<BR> Signal: ",signal,
+                                             "<BR> MO: ",mo))
+        
         return(theMap)
+        
     })
     
     
@@ -352,10 +370,11 @@ server <- function(input, output) {
                 stat_bin(bins = input$HIST_BINS,geom="text", colour="black", size=5.5,aes(label=..count..),
                 position = position_stack(vjust = 1.15)) + 
             theme(text = element_text(size=20),axis.text.x = element_text(size = 15)) 
-        
-    }, height = 200)
+    })   
+    #}, height = 200)
     
 }
 
 # Run the application 
 shinyApp(ui = ui, server = server)
+
