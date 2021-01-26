@@ -11,8 +11,14 @@ library(leaflet.extras)
 #setwd("C:/Users/sconroy/Documents/meystingray.github.io/ShinyMurderMap")
 token <- readRDS("droptoken.rds")
 
+# Download Murder Data
 drop_download(path = "Shiny/Murder.RDS",local_path =  paste0(tempdir(), "/MurderData.RDS"),overwrite = TRUE, dtoken = token)
 Murder <- readRDS(paste0(tempdir(), "/MurderData.RDS"))
+
+# Download Police Stations
+drop_download(path = "Shiny/PoliceStations.RDS",local_path =  paste0(tempdir(), "/PoliceStations.RDS"),overwrite = TRUE, dtoken = token)
+PoliceStations <- readRDS(paste0(tempdir(), "/PoliceStations.RDS"))
+
 
 columnChoices <- c("Year","Watch", "Beat", "Officer_Incident", "Comp_Race", "Comp_Ethnicity", 
        "Comp_Sex", "Status","Victim_Condition", "NumPerYear")
@@ -78,8 +84,14 @@ ui <- fluidPage(
             selectInput("COLOR_COLUMN", "Color By:", choices = columnChoices,selected = "Year"),
             sliderInput('MarkerSize', 'Marker Size', min = 1, max = 10,value = 5),
             sliderInput('NumClusters', '# Clusters \n (reduce Marker Size to view)', min = 0, max = 30,value = 5),
-            strong("Show Heat Map:"),
-            switchInput(inputId = "ShowHeatMap",label = NULL,value = FALSE)
+            splitLayout(cellWidths = c("40%", "60%"), #style = "border: 1px solid silver;",
+                strong("Show Heat Map"),
+                strong("Show Police Stations")
+            ),
+            splitLayout(cellWidths = c("50%", "50%"),
+                switchInput(inputId = "ShowHeatMap",label = NULL,value = FALSE,size = "small"),
+                switchInput(inputId = "ShowPoliceStations",label = NULL,value = FALSE,size = "small")
+            )
         ),
         column(6,leafletOutput("LeafletMap")),
         column(2,tableOutput("SummaryTable"))
@@ -103,7 +115,7 @@ ui <- fluidPage(
     
 )
 
-#shinyApp(ui = ui, server = server)
+shinyApp(ui = ui, server = server)
 
 # Define server logic required to draw a histogram
 url <- a("'Police Incidents'",
@@ -115,6 +127,12 @@ LegendPal <- colorFactor(
         palette = 'Spectral', #alpha = TRUE,
         #levels = unique(Murder$Year)
         domain = NULL
+)
+
+icons <- awesomeIcons(
+    icon = 'building',
+    iconColor = 'black',
+    library = 'fa'
 )
 
 server <- function(input, output) {
@@ -145,8 +163,9 @@ server <- function(input, output) {
         selectInput("FILTER_VALUE", label = "Filter Value", choices = c(x,"None"), selected = 'None')
     })
     
-    output$ShowHeatMap <- renderPrint({ input$ShowHeatMap })
-
+    #output$ShowHeatMap <- renderPrint({ input$ShowHeatMap })
+    #output$ShowPoliceStations <- renderPrint({ input$ShowPoliceStations })
+    
     filtering_string <- reactive ({
     
         if (!is.null(input$FILTER_COLUMN) && !is.null(input$FILTER_VALUE)) {
@@ -343,6 +362,14 @@ server <- function(input, output) {
                         radius = 7, blur = 15, gradient = NULL, cellSize = 5)
         }
         
+        if (input$ShowPoliceStations == TRUE) {
+
+            theMap <- theMap %>% addMarkers(data = PoliceStations,lng = ~Longitude, lat = ~Latitude,
+                                            popup = ~paste0(station,"<BR>","<BR>",address),
+                                            options = popupOptions(closeButton = TRUE),
+                                            icon = icons
+                                            )
+        }
         
         theMap <- theMap %>%
             addCircleMarkers(lng = ~Longitude, lat = ~Latitude, weight = 0, radius = input$MarkerSize,
