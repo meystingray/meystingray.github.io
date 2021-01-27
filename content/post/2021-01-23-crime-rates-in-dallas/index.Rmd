@@ -8,6 +8,10 @@ categories:
 tags: []
 ---
 
+To explore the Dallas Crime data more yourself, check out [my Shiny app here](https://sean-conroy.shinyapps.io/shinycrimeexplorer/){target="_blank"}.
+
+The code behind this blog post is [on GitHub here](https://github.com/meystingray/meystingray.github.io/blob/master/content/post/2021-01-23-crime-rates-in-dallas/index.RMD){target="_blank"}.
+
 
 ```{r Setup and Load Data,echo = FALSE}
 
@@ -43,7 +47,8 @@ PI[grepl("MURDER",offincident) | grepl("HOMICIDE",offincident) | grepl("MURDER",
 
 PI[,NumMurdersPerMonth := mean(NumMurdersPerMonth,na.rm = TRUE),by = MonthDate]
 
-PI[grepl("SUBSTANCE",offincident) | grepl("MARIJUANA",offincident) | grepl("DRUG",offincident),
+PI[grepl("SUBSTANCE",offincident) | grepl("MARIJUANA",offincident) | grepl("DRUG",offincident) | 
+       grepl("INHALANT PARAPHERNALIA",offincident) | grepl("POSS CONT SUB PEN GRP,",offincident),
    NumDrugsPerMonth := .N,by = MonthDate]
 
 PI[,NumDrugsPerMonth := mean(NumDrugsPerMonth,na.rm = TRUE),by = MonthDate]
@@ -75,6 +80,7 @@ PI[,NumTheftsPerMonth := mean(NumTheftsPerMonth,na.rm = TRUE),by = MonthDate]
 Pivot in preparation to plot:
 
 ```{r Pivot and Plot, echo = TRUE}
+
 combined <- PI[,head(.SD,1),
                .SDcols = c("NumMurdersPerMonth","NumAssaultsPerMonth","NumKidnapPerMonth",
                            "NumTheftsPerMonth","NumAccidentsPerMonth","NumDrugsPerMonth"),
@@ -82,6 +88,8 @@ combined <- PI[,head(.SD,1),
 
 # Remove falsely low month aggregated values since the month is not yet complete.
 combined <- combined[MonthDate < as.Date("2021-01-01")]
+
+combined_xts <- as.xts.data.table(combined) # Setup for dyplot
 
 combined <- melt(combined,
                  measure.vars = c("NumMurdersPerMonth","NumAssaultsPerMonth","NumTheftsPerMonth",
@@ -113,3 +121,12 @@ ggplot(combined,aes(x = Date)) + geom_point(aes(y = `# Per Month`,color = Crime)
 ```
 
 Wow.  Looks like crime across the board is trending up.
+
+
+The interactive Dygraph, using the Dyr
+```{r dyplot,echo = FALSE}
+
+library(dygraphs)
+dygraph(combined_xts)
+
+```
