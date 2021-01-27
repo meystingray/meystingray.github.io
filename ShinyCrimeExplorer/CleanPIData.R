@@ -72,14 +72,13 @@ PI[grepl("CRIM MISCHIEF",offincident),Type := "CRIM MISCHIEF"]
 
 PI[grepl("CRIMINAL TRESPASS",offincident),Type := "CRIMINAL TRESPASS"]
 
-PI[grepl("",offincident),Type := ""]
+#PI[grepl("",offincident),Type := ""]
 
-PI[grepl("",offincident),Type := ""]
-
+#PI[grepl("",offincident),Type := ""]
 
 PI[is.na(Type),Type := "OTHER"]
 
-sort(table(PI[Type == "OTHER",offincident]))
+#sort(table(PI[Type == "OTHER",offincident]))
 
 CleanPI <- PI[,.(Year,Date,WeekDate,MonthDate,Latitude,Longitude,Type,offincident,offensecode,signal)]
 
