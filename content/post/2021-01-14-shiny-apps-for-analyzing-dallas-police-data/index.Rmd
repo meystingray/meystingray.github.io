@@ -10,13 +10,14 @@ tags:
 ---
 
 
+To explore the Dallas Crime data more yourself, check out [my Dallas Crime Explorer Shiny app here](https://sean-conroy.shinyapps.io/shinycrimeexplorer/){target="_blank"}.
 
-To explore the Dallas Murder data more yourself, check out [my Shiny app here](https://sean-conroy.shinyapps.io/shinymurdermap/){target="_blank"}.
+To explore the Dallas Murder data more yourself, check out [my Dallas Murder Shiny app here](https://sean-conroy.shinyapps.io/shinymurdermap/){target="_blank"}.
 
 
 ## Dallas Trafficking
 
-To explore the Dallas Trafficking data yourself, check out [my Shiny app here](https://sean-conroy.shinyapps.io/shinytraffic/){target="_blank"}.
+To explore the Dallas Trafficking data yourself, check out [my Dallas Trafficking Shiny app here](https://sean-conroy.shinyapps.io/shinytraffic/){target="_blank"}.
 
 ```{r Load Data,echo = FALSE,eval=FALSE}
 library(data.table)

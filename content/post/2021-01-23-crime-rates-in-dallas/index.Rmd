@@ -8,15 +8,17 @@ categories:
 tags: []
 ---
 
-To explore the Dallas Crime data more yourself, check out [my Shiny app here](https://sean-conroy.shinyapps.io/shinycrimeexplorer/){target="_blank"}.
+To explore the Dallas Crime data more yourself, check out [my Dallas Crime Explorer Shiny app here](https://sean-conroy.shinyapps.io/shinycrimeexplorer/){target="_blank"}.
 
 The code behind this blog post is [on GitHub here](https://github.com/meystingray/meystingray.github.io/blob/master/content/post/2021-01-23-crime-rates-in-dallas/index.RMD){target="_blank"}.
 
 
-```{r Setup and Load Data,echo = FALSE}
+```{r Setup and Load Data,echo = FALSE,include=FALSE}
 
 library(data.table)
 library(ggplot2)
+library(dygraphs)
+library(xts)
 
 PI <- readRDS("C:/Users/sconroy/Documents/DallasPoliceData/PoliceIncidents1-9-21.RDS")
 
@@ -123,10 +125,9 @@ ggplot(combined,aes(x = Date)) + geom_point(aes(y = `# Per Month`,color = Crime)
 Wow.  Looks like crime across the board is trending up.
 
 
-The interactive Dygraph, using the Dyr
+The interactive Dygraph, using the [Dygraph package](https://rstudio.github.io/dygraphs/){target="_blank"}.
 ```{r dyplot,echo = FALSE}
 
-library(dygraphs)
 dygraph(combined_xts)
 
 ```

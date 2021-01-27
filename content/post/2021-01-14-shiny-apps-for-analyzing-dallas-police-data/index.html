@@ -9,12 +9,14 @@ tags:
   - shiny
 ---
 
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
-<p>To explore the Dallas Murder data more yourself, check out <a href="https://sean-conroy.shinyapps.io/shinymurdermap/" target="_blank">my Shiny app here</a>.</p>
+<p>To explore the Dallas Crime data more yourself, check out <a href="https://sean-conroy.shinyapps.io/shinycrimeexplorer/" target="_blank">my Dallas Crime Explorer Shiny app here</a>.</p>
+<p>To explore the Dallas Murder data more yourself, check out <a href="https://sean-conroy.shinyapps.io/shinymurdermap/" target="_blank">my Dallas Murder Shiny app here</a>.</p>
 <div id="dallas-trafficking" class="section level2">
 <h2>Dallas Trafficking</h2>
-<p>To explore the Dallas Trafficking data yourself, check out <a href="https://sean-conroy.shinyapps.io/shinytraffic/" target="_blank">my Shiny app here</a>.</p>
+<p>To explore the Dallas Trafficking data yourself, check out <a href="https://sean-conroy.shinyapps.io/shinytraffic/" target="_blank">my Dallas Trafficking Shiny app here</a>.</p>
 <p>To explore any recorded incidents of human trafficking in the Dallas area, I used the following code:</p>
 <pre class="r"><code>setDT(PI)
 traffic &lt;- PI[grepl(&quot;TRAFFICKING&quot;,offincident),]

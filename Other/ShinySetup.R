@@ -15,6 +15,7 @@ runApp("C:/Users/sconroy/Documents/meystingray.github.io/ShinyCrimeExplorer")
 
 rsconnect::deployApp("C:/Users/sconroy/Documents/meystingray.github.io/ShinyMurderMap")
 rsconnect::deployApp("C:/Users/sconroy/Documents/meystingray.github.io/ShinyTraffic")
+rsconnect::deployApp("C:/Users/sconroy/Documents/meystingray.github.io/ShinyCrimeExplorer")
 
 #library(rdrop2)
 #token <- drop_auth()
