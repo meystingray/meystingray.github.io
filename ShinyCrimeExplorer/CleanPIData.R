@@ -80,6 +80,6 @@ PI[is.na(Type),Type := "OTHER"]
 
 #sort(table(PI[Type == "OTHER",offincident]))
 
-CleanPI <- PI[,.(Year,Date,WeekDate,MonthDate,Latitude,Longitude,Type,offincident,offensecode,signal)]
+CleanPI <- PI[,.(Year,Date,WeekDate,MonthDate,Latitude,Longitude,Type,offincident,offensecode,signal,beat,division,sector)]
 
 #saveRDS(CleanPI,"C:/Users/sconroy/Documents/DallasPoliceData/CleanPI.RDS")
