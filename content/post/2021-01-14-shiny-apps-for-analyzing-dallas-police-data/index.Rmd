@@ -9,11 +9,19 @@ tags:
   - shiny
 ---
 
++-------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Exploring Dallas Murders                                                                                                                                    | Forecasting Dallas Crime Rates                                                                                                                          |
+|                                                                                                                                                             |                                                                                                                                                         |
+| [![Exploring Dallas Murders](images/DallasMurders.PNG "Exploring Dallas Murders"){width="285"}](https://sean-conroy.shinyapps.io/shinymurdermap/)           | [![Forecasting Dallas Crime](images/CrimeForecaster.PNG "Forecasting Dallas Crime"){width="212"}](https://sean-conroy.shinyapps.io/shinycrimeexplorer/) |
++-------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
+| Exploring Dallas Trafficking                                                                                                                                |                                                                                                                                                         |
+|                                                                                                                                                             |                                                                                                                                                         |
+| [![Exploring Dallas Trafficking](images/DallasTrafficking.PNG "Exploring Dallas Trafficking"){width="255"}](https://sean-conroy.shinyapps.io/shinytraffic/) |                                                                                                                                                         |
++-------------------------------------------------------------------------------------------------------------------------------------------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------+
 
 To explore the Dallas Crime data more yourself, check out [my Dallas Crime Explorer Shiny app here](https://sean-conroy.shinyapps.io/shinycrimeexplorer/){target="_blank"}.
 
 To explore the Dallas Murder data more yourself, check out [my Dallas Murder Shiny app here](https://sean-conroy.shinyapps.io/shinymurdermap/){target="_blank"}.
-
 
 ## Dallas Trafficking
 
@@ -55,7 +63,6 @@ traffic[,Year := as.factor(servyr)]
 
 ```
 
-
 Here's the code to create the Leaflet map within the Shiny app:
 
 ```{r Leaflet,echo = TRUE,eval=FALSE}
@@ -73,6 +80,5 @@ Here's the code to create the Leaflet map within the Shiny app:
                           opacity = 1)
 
 ```
-
 
 The full code behind the Shiny App is [on GitHub here](https://github.com/meystingray/meystingray.github.io/tree/master/ShinyTraffic){target="_blank"}.

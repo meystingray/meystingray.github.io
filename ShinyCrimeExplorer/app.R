@@ -12,6 +12,7 @@ library(leafgl)
 library(colourvalues)
 library(sf)
 library(dplyr)
+library(bslib)
 
 #setwd("C:/Users/sconroy/Documents/meystingray.github.io/ShinyCrimeExplorer")
 token <- readRDS("droptoken.rds")
@@ -30,7 +31,15 @@ MapPI <- st_as_sf(MapPI,coords = c("Longitude","Latitude"),crs = 4326)
 
 #filterCols <- c("Year", "Type", "offensecode", "signal", "beat", "division", "sector")
 
-ui <- fluidPage(title = "Forecasting Dallas Crime Rates",
+# solar_theme <- bs_theme(
+#     bg = "#002B36", fg = "#EEE8D5", primary = "#2AA198", 
+#     base_font = font_google("Roboto")
+# )
+
+
+ui <- fluidPage(
+    theme = bslib::bs_theme(version = 4, bootswatch = "sandstone"),
+    title = "Forecasting Dallas Crime Rates",
     titlePanel("Forecasting Dallas Crime Rates"),
     p(),
     fluidRow(
@@ -48,15 +57,18 @@ ui <- fluidPage(title = "Forecasting Dallas Crime Rates",
                sliderInput('ProphetPeriods', 'Forecast # Periods', min = 10, max = 1000,value = 365),
 
                strong(em("'Forecasting Dallas Crime Rates'"),p(),"an R-Shiny app by ",
-                      a("Sean Conroy",href ='https://www.seantconroy.com/'))
+                      a("Sean Conroy",href ='https://www.seantconroy.com/')),
+               p(),
+               downloadButton("downloadData", "Download the Predictions")
         ),
         p(),
-        column(8,dygraphOutput("Forecast"))
+        column(8,dygraphOutput("ForecastPlot")),
     ),
     fluidRow(
         column(12,
                strong(em("Forecasting using Facebook's ",a("Prophet package",href ='https://facebook.github.io/prophet/')))
         )
+        
      
     )
     
@@ -65,7 +77,6 @@ ui <- fluidPage(title = "Forecasting Dallas Crime Rates",
 # input <- list()
 # input$DIVISION_FILTER <- "CENTRAL"
 # input$TYPE_FILTER <- "THEFT"
-
 
 server <- function(input, output, session) {
 
@@ -126,7 +137,7 @@ server <- function(input, output, session) {
             filtStr <- trimws(paste0(divFil,typeFil))
         }
         
-        print(filtStr)
+        #print(filtStr)
         
         if (nchar(filtStr) > 1) {
             eval(parse(text =  paste0("CleanPI[",filtStr,",.(y = .N,ds = Date),by = Date]")))
@@ -143,13 +154,28 @@ server <- function(input, output, session) {
         # }
     })
 
-    output$Forecast <- renderDygraph({
-
+    ProphetForecast <- reactive({
         m <- prophet(FilteredCrimeForProphet())
         future <- make_future_dataframe(m, periods = input$ProphetPeriods)
         forecast <- predict(m, future)
-        dyplot.prophet(m, forecast)
+        return(list(m,forecast))
     })
+    
+    output$ForecastPlot <- renderDygraph({
+        p <- ProphetForecast()
+        dyplot.prophet(p[[1]], p[[2]])
+    })
+    
+    
+    # Downloadable csv of selected dataset ----
+    output$downloadData <- downloadHandler(
+        filename = function() {
+            paste("DallasCrimeForecast-",input$DIVISION_FILTER,"-",input$TYPE_FILTER,"_",Sys.Date(),".csv",sep="")
+        },
+        content = function(file) {
+            write.csv(ProphetForecast()[[2]], file, row.names = FALSE)
+        }
+    )
     
 }
 
