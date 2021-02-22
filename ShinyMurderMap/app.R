@@ -7,6 +7,9 @@ library(leaflet)
 library(RSocrata)
 library(shinyWidgets)
 library(leaflet.extras)
+library(shinythemes)
+library(zoo)
+library(dygraphs)
 
 #setwd("C:/Users/sconroy/Documents/meystingray.github.io/ShinyMurderMap")
 token <- readRDS("droptoken.rds")
@@ -60,16 +63,28 @@ MurderRefresh <- function(Murder) {
         
         setnames(NewMurder,old = c("beat","watch","offincident","comprace","compsex","compage","compethnicity","status","victimcond"),
                  c("Beat","Watch","Officer_Incident","Comp_Race","Comp_Sex","Comp_Age","Comp_Ethnicity","Status","Victim_Condition"))
+        
+        NewMurder[,Date := as.IDate(Date)]
+        NewMurder[,MonthDate := as.IDate(MonthDate)]
+        NewMurder[,WeekDate := as.IDate(WeekDate)]
         Murder <- rbindlist(list(Murder,NewMurder),use.names = TRUE,fill = TRUE)
         setorder(Murder,Date)
         Murder[,NumPerYear := 1:.N,by = Year]
         
+        # Now upload to Dropbox
+        newPath <- paste0(tempdir(), "/Murder.RDS")
+        saveRDS(Murder,file = newPath)
+        rdrop2::drop_upload(file = newPath,path = "Shiny/",mode = "overwrite",dtoken = token)
+            
     }
+    
     #print(max(Murder$Date,na.rm = TRUE))
     Murder
 }
 
 ui <- fluidPage(
+    theme = shinytheme("spacelab"),
+    #shinythemes::themeSelector(),
     fluidRow(
         column(12,titlePanel("Exploring Dallas Murders"))
     ),
@@ -98,7 +113,6 @@ ui <- fluidPage(
     ),
     fluidRow(
         column(4,
-               sliderInput('HIST_BINS', 'Histogram # Bins', min = 10, max = 50,value = 12),
                textOutput('RefreshDate'),
                p(),
                actionButton("RefreshData", "Refresh Data"),
@@ -106,7 +120,7 @@ ui <- fluidPage(
                strong(em("'Exploring Dallas Murders'"),p(),"an R-Shiny app by ",
                                 a("Sean Conroy",href ='https://www.seantconroy.com/'))
                ),
-        column(8,plotOutput("hist"))
+        column(8,dygraphOutput("Dygraph"))
         ),
     #fluidRow(
     #    column(12,strong("Exploring Dallas Murders.  An R-Shiny app by ",
@@ -115,7 +129,7 @@ ui <- fluidPage(
     
 )
 
-shinyApp(ui = ui, server = server)
+#shinyApp(ui = ui, server = server)
 
 # Define server logic required to draw a histogram
 url <- a("'Police Incidents'",
@@ -400,6 +414,33 @@ server <- function(input, output) {
     })   
     #}, height = 200)
     
+    
+    DygraphData <- reactive({
+        
+        q <- filtered_table()[,.(NumPerMonth = .N),by = MonthDate]
+        q$MonthDate <- as.Date(q$MonthDate)
+        m <- zoo(x = q$NumPerMonth,order.by = q$MonthDate)
+        c <- merge(m, zoo(, seq(start(m), end(m),by = "1 month")), all = TRUE)
+        return(c)
+    })
+    
+    output$Dygraph <- renderDygraph({
+        
+        dygraph(DygraphData(),ylab = "Num Per Month",main = "Num Murders Per Month") %>%
+            dyOptions(fillGraph = TRUE, fillAlpha = 0.4,colors = "red",axisLabelColor = "red") %>%
+            dySeries(label = 'Num / Month') %>%
+            dyLegend(show = "onmouseover", hideOnMouseOut = FALSE) %>%
+            dyCSS(textConnection("
+                .dygraph-legend > span { color: red; font-weight: bold background-color: coral}
+            "))
+            #dySeries(label = 'Num / Month', color = 'black') %>%
+            #dyAnnotation(x, text, attachAtBottom = TRUE, width = 60,)
+            #dyOptions(fillGraph = TRUE, fillAlpha = 0.4,colors = "orange") %>% 
+            #dyShading(color = "black") %>%
+            #dyHighlight(highlightCircleSize = 5,highlightSeriesBackgroundAlpha = 0.5,hideOnMouseOut = TRUE)
+        
+        
+    })
 }
 
 # Run the application 
