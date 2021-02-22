@@ -1,0 +1,9 @@
+---
+title: Graph Feature Identification with 1D Conv Nets
+author: Sean Conroy
+date: '2021-02-22'
+slug: graph-feature-identification-with-1d-conv-nets
+categories:
+  - Machine Learning
+tags: []
+---

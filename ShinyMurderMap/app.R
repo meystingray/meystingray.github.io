@@ -407,10 +407,11 @@ server <- function(input, output) {
     
     output$hist <- renderPlot({
         
-        ggplot(filtered_table(),aes(x = Date)) + geom_histogram(bins = input$HIST_BINS,colour='red',size = 1) + 
+        ggplot(filtered_table(),aes(x = Date)) + geom_histogram(bins = input$HIST_BINS,colour='red',size = 1) +
                 stat_bin(bins = input$HIST_BINS,geom="text", colour="black", size=5.5,aes(label=..count..),
-                position = position_stack(vjust = 1.15)) + 
-            theme(text = element_text(size=20),axis.text.x = element_text(size = 15)) 
+                position = position_stack(vjust = 1.15)) +
+            theme(text = element_text(size=20),axis.text.x = element_text(size = 15))
+
     })   
     #}, height = 200)
     
