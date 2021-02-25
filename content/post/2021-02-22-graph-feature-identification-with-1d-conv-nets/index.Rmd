@@ -7,3 +7,21 @@ categories:
   - Machine Learning
 tags: []
 ---
+
+## Motivation:
+
+Often in my line of work I'm asked to identify "kinks", curves or bends in XY graph data, and I've spent inordinate amounts of time coding up various algorithms to find the change in the slope or threshold a change in the deviation around a linear fit, etc. These algorithms are never terrible accurate, and after taking most of Andrew Ng's excellent [Conv Nets](https://www.coursera.org/learn/convolutional-neural-networks) class on Coursera last year, I've often wondered if CNN's could be configured to be used for this type of work. Instead of passing images to CNN's, could we pass the graph data itself directly, and then configure the model to recognize the shape we want?
+
+## It's Already Been Done...?
+
+1D CNN's apparently have a robust history of being used for classification in time series data. instead of passing 2D arrays of RBG values, folks pass in 1D arrays of "y" values from our X-Y chart. Assuming constant X-axis spacing, of course. The X-axis could probably just be another feature, if it was needed. Anyway, of the various examples out there, [Jason Brownlee's](https://machinelearningmastery.com/cnn-models-for-human-activity-recognition-time-series-classification/) seems to be the original that everyone refers too.
+
+However, most of the work I see with 1D Conv Nets is only limited to classification. Can we really use it for quantitative prediction of aspects of these features, beyond simply detection? My approach here is in three steps...
+
+1.  Use CNN's as a classifier to predict whether or not a segment has the feature. Simply use a 2-unit dense Softmax layer at the end of the network to predict the probability of a "Yes".
+
+2.  Using just the subset of samples classified as "Yes", predict the "location" of the feature using a 1-unit dense Relu layer.
+
+3.  Again using just the subset of samples classified as "Yes", making predictions quantifying the shape of the feature using a 1-unit dense Relu layer.
+
+![](images/Slide1.PNG "What are we looking for?")
