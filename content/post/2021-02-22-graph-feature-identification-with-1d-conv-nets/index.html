@@ -19,10 +19,80 @@ tags: []
 <h2>It’s Already Been Done…?</h2>
 <p>1D CNN’s apparently have a robust history of being used for classification in time series data. instead of passing 2D arrays of RBG values, folks pass in 1D arrays of “y” values from our X-Y chart. Assuming constant X-axis spacing, of course. The X-axis could probably just be another feature, if it was needed. Anyway, of the various examples out there, <a href="https://machinelearningmastery.com/cnn-models-for-human-activity-recognition-time-series-classification/">Jason Brownlee’s</a> seems to be the original that everyone refers too.</p>
 <p>However, most of the work I see with 1D Conv Nets is only limited to classification. Can we really use it for quantitative prediction of aspects of these features, beyond simply detection? My approach here is in three steps…</p>
-<ol style="list-style-type: decimal">
+<ol style="list-style-type: upper-alpha">
 <li><p>Use CNN’s as a classifier to predict whether or not a segment has the feature. Simply use a 2-unit dense Softmax layer at the end of the network to predict the probability of a “Yes”.</p></li>
 <li><p>Using just the subset of samples classified as “Yes”, predict the “location” of the feature using a 1-unit dense Relu layer.</p></li>
 <li><p>Again using just the subset of samples classified as “Yes”, making predictions quantifying the shape of the feature using a 1-unit dense Relu layer.</p></li>
 </ol>
 <p><img src="images/Slide1.PNG" title="What are we looking for?" /></p>
+</div>
+<div id="methods" class="section level2">
+<h2>Methods…</h2>
+<p>To test the capability of Conv Nets to do A - C, I created some simulated data with a simple two-slope compound line. I wanted to see if the CNNs could detect whether or not the slope changed, regardless of the initial slope or the quantity of noise around the slope. The nice thing about XY data is that it’s very easy to generate lots of training data computationally! I created 20,000 samples as a training set, and randomly added the slope change to half the samples. For each sample, it was easy enough to record A) Yes/No for the feature presence, B) the feature Location, and C) the Slope of the feature.</p>
+</div>
+<div id="using-1d-cnns-to-detect-the-feature" class="section level2">
+<h2>Using 1D CNN’s to Detect the Feature</h2>
+<pre class="r"><code>library(keras)
+
+classification_model &lt;- keras_model_sequential() %&gt;% 
+    layer_conv_1d(filters = 32, kernel_size = 5, activation = &quot;relu&quot;,input_shape = c(l,1),strides = 10L) %&gt;%
+    layer_conv_1d(filters = 32, kernel_size = 5,strides = 1L) %&gt;%
+    layer_max_pooling_1d() %&gt;%
+    layer_conv_1d(filters = 32, kernel_size = 5,strides = 1L) %&gt;%
+    layer_dropout(0.5) %&gt;%
+    layer_flatten() %&gt;%
+    layer_dense(units = 2, activation = &quot;softmax&quot;)
+
+
+classification_model %&gt;% compile(loss = &#39;sparse_categorical_crossentropy&#39;,
+                  optimizer = &#39;adam&#39;,
+                  metrics = &#39;accuracy&#39;)
+
+classification_model %&gt;% summary()
+
+classification_model %&gt;% fit(x_train_scale, y_train, epochs = 25, verbose = TRUE)
+
+classification_test_score &lt;- classification_model %&gt;% evaluate(x_test_scale, y_test, verbose = TRUE)</code></pre>
+<p>Running this model easily gains high accuracy. The classification_test_score gives an accuracy 0.990.</p>
+<table>
+<caption>Classification Results</caption>
+<tbody>
+<tr class="odd">
+<td><img src="images/1853.png" /></td>
+<td><img src="images/5263.png" /></td>
+<td><img src="images/6326.png" /></td>
+</tr>
+<tr class="even">
+<td><img src="images/6532.png" /></td>
+<td><img src="images/9558.png" /></td>
+<td><img src="images/11724.png" /></td>
+</tr>
+<tr class="odd">
+<td><img src="images/13728.png" /></td>
+<td><img src="images/17363.png" /></td>
+<td><img src="" /><img src="images/18339.png" /></td>
+</tr>
+</tbody>
+</table>
+<p>Regression Results:</p>
+<table>
+<caption>Regression: Predict Location</caption>
+<tbody>
+<tr class="odd">
+<td><img src="images/191.png" /></td>
+<td><img src="images/235.png" /></td>
+<td><img src="images/264.png" /></td>
+</tr>
+<tr class="even">
+<td><img src="images/273.png" /></td>
+<td><img src="images/392.png" /></td>
+<td><img src="images/418.png" /></td>
+</tr>
+<tr class="odd">
+<td><img src="images/618.png" /></td>
+<td><img src="images/672.png" /></td>
+<td><img src="images/710.png" /></td>
+</tr>
+</tbody>
+</table>
 </div>

@@ -18,10 +18,61 @@ Often in my line of work I'm asked to identify "kinks", curves or bends in XY gr
 
 However, most of the work I see with 1D Conv Nets is only limited to classification. Can we really use it for quantitative prediction of aspects of these features, beyond simply detection? My approach here is in three steps...
 
-1.  Use CNN's as a classifier to predict whether or not a segment has the feature. Simply use a 2-unit dense Softmax layer at the end of the network to predict the probability of a "Yes".
+A.  Use CNN's as a classifier to predict whether or not a segment has the feature. Simply use a 2-unit dense Softmax layer at the end of the network to predict the probability of a "Yes".
 
-2.  Using just the subset of samples classified as "Yes", predict the "location" of the feature using a 1-unit dense Relu layer.
+B.  Using just the subset of samples classified as "Yes", predict the "location" of the feature using a 1-unit dense Relu layer.
 
-3.  Again using just the subset of samples classified as "Yes", making predictions quantifying the shape of the feature using a 1-unit dense Relu layer.
+C.  Again using just the subset of samples classified as "Yes", making predictions quantifying the shape of the feature using a 1-unit dense Relu layer.
 
 ![](images/Slide1.PNG "What are we looking for?")
+
+## Methods...
+
+To test the capability of Conv Nets to do A - C, I created some simulated data with a simple two-slope compound line. I wanted to see if the CNNs could detect whether or not the slope changed, regardless of the initial slope or the quantity of noise around the slope. The nice thing about XY data is that it's very easy to generate lots of training data computationally! I created 20,000 samples as a training set, and randomly added the slope change to half the samples. For each sample, it was easy enough to record A) Yes/No for the feature presence, B) the feature Location, and C) the Slope of the feature.
+
+## Using 1D CNN's to Detect the Feature
+
+```{r Print Plots, eval = FALSE, echo = TRUE}
+
+library(keras)
+
+classification_model <- keras_model_sequential() %>% 
+    layer_conv_1d(filters = 32, kernel_size = 5, activation = "relu",input_shape = c(l,1),strides = 10L) %>%
+    layer_conv_1d(filters = 32, kernel_size = 5,strides = 1L) %>%
+    layer_max_pooling_1d() %>%
+    layer_conv_1d(filters = 32, kernel_size = 5,strides = 1L) %>%
+    layer_dropout(0.5) %>%
+    layer_flatten() %>%
+    layer_dense(units = 2, activation = "softmax")
+
+
+classification_model %>% compile(loss = 'sparse_categorical_crossentropy',
+                  optimizer = 'adam',
+                  metrics = 'accuracy')
+
+classification_model %>% summary()
+
+classification_model %>% fit(x_train_scale, y_train, epochs = 25, verbose = TRUE)
+
+classification_test_score <- classification_model %>% evaluate(x_test_scale, y_test, verbose = TRUE)
+```
+
+Running this model easily gains high accuracy. The classification_test_score gives an accuracy 0.990.
+
+|                       |                       |                            |
+|-----------------------|-----------------------|----------------------------|
+| ![](images/1853.png)  | ![](images/5263.png)  | ![](images/6326.png)       |
+| ![](images/6532.png)  | ![](images/9558.png)  | ![](images/11724.png)      |
+| ![](images/13728.png) | ![](images/17363.png) | ![]()![](images/18339.png) |
+
+: Classification Results
+
+Regression Results:
+
+|                     |                     |                     |
+|---------------------|---------------------|---------------------|
+| ![](images/191.png) | ![](images/235.png) | ![](images/264.png) |
+| ![](images/273.png) | ![](images/392.png) | ![](images/418.png) |
+| ![](images/618.png) | ![](images/672.png) | ![](images/710.png) |
+
+: Regression: Predict Location
