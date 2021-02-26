@@ -32,7 +32,7 @@ To test the capability of Conv Nets to do A - C, I created some simulated data w
 
 ## Build a Training Set
 
-```{r Build training set, echo=TRUE,eval=TRUE}
+```{r Build training set, echo=TRUE,eval=FALSE}
 
 library(data.table)
 
@@ -130,8 +130,8 @@ Now let's take a look at what we've got:
 
 |                                      |                                      |                                       |
 |--------------------------------------|--------------------------------------|---------------------------------------|
-| ![](images/1128-01.png){width="280"} | ![](images/3926-01.png){width="280"} | ![](images/4699-01.png)               |
-| ![](images/7981-01.png){width="280"} | ![](images/8327-01.png){width="280"} | ![](images/10817-01.png){width="280"} |
+| ![](images/1128.png){width="280"} | ![](images/3926.png){width="280"} | ![](images/4699.png)               |
+| ![](images/7981.png){width="280"} | ![](images/8327.png){width="280"} | ![](images/10817.png){width="280"} |
 
 : Sampling the Training Set
 
@@ -197,7 +197,7 @@ Running this model easily gains high accuracy. The classification_test_score giv
 |------------------------------------|------------------------------------|-----------------------------------------|
 | ![](images/1853.png){width="280"}  | ![](images/5263.png){width="280"}  | ![](images/6326.png){width="280"}       |
 | ![](images/6532.png){width="280"}  | ![](images/9558.png){width="280"}  | ![](images/11724.png){width="280"}      |
-| ![](images/13728.png){width="280"} | ![](images/17363.png){width="280"} | ![]()![](images/18339.png){width="280"} |
+| ![](images/13728.png){width="280"} | ![](images/17363.png){width="280"} | ![](images/18339.png){width="280"} |
 
 : Classification Results
 
@@ -334,7 +334,7 @@ predict_slope1 <- (predict_slope1*scale_slope1_test$`scaled:scale` + scale_slope
 
 The loss / accuracy plots show that the network appears to be learning quite nicely.
 
-![](images/Slope1Regression-02.png){width="200"}
+![](images/Slope1Regression-02.png){width="300"}
 
 Let's combine the regression predictions for feature location and the two slopes, and take a look at the results. Black is actual, red is predicted.
 
