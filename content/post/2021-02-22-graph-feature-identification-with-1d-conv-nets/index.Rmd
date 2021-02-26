@@ -48,14 +48,12 @@ X <- data.table(n = integer(q*l),
                 slopediff = numeric(q*l)
                 )
 
-#i = 2
 for (i in 1:q) {
     
     rstart <- (i - 1)*l + 1
     rend <- i*l
     
-    print(i)
-    
+    # For half the samples, create a compound, noisy line with two different slope segments
     if (sample(c(0,1),1) == 1) {
         
         cross <- sample(seq(from = 0.3*l,to = 0.7*l,by = 1),1) + round(rnorm(1,sd = 20),digits = 0)
@@ -81,15 +79,7 @@ for (i in 1:q) {
         Y <- c(Y1,Y2)
         n <- rnorm(length(Y),mean = 1,sd = 0.03)
         Y <- Y*n + rnorm(length(Y),sd = 2)
-        
-        #Y <- jitter(Y,factor = n) #rnorm(length(Y),mean = mean(Y)*n)
-        # plot(Y)
-        # plot(Y2)
-        # abline(a = max(Y1),b = y1)
-        # abline(v = cross)
-        # abline(a = abs(min(Y1)),b = y2)
-        
-        
+
         X[(rstart:rend),n := i]
         X[(rstart:rend),y := Y]
         X[(rstart:rend),truth := 1L]
@@ -98,7 +88,7 @@ for (i in 1:q) {
         X[(rstart:rend),slope2 := y2]
         X[(rstart:rend),slopediff := y1 - y2]
 
-        #Sys.sleep(1)
+    # For the other "No" samples without a feature, use just one slope
     } else {
         
         y1 <- rnorm(1,mean = -0.3,sd = 0.3)
@@ -109,9 +99,6 @@ for (i in 1:q) {
         Y <- y1*xfull
         n <- rnorm(length(Y),mean = 1,sd = 0.03)
         Y <- Y*n + rnorm(length(Y),sd = 2)
-        
-        #plot(Y)
-        #Sys.sleep(1)
         
         X[(rstart:rend),n := i]
         X[(rstart:rend),y := Y]
