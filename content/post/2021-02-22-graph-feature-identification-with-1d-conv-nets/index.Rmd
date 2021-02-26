@@ -128,10 +128,10 @@ for (i in 1:q) {
 
 Now let's take a look at what we've got:
 
-|                                      |                                      |                                       |
-|--------------------------------------|--------------------------------------|---------------------------------------|
-| ![](images/1128.png){width="280"} | ![](images/3926.png){width="280"} | ![](images/4699.png)               |
-| ![](images/7981.png){width="280"} | ![](images/8327.png){width="280"} | ![](images/10817.png){width="280"} |
+|                                   |                                   |                                    |
+|-----------------------------------|-----------------------------------|------------------------------------|
+| ![](images/1128.png){width="330"} | ![](images/3926.png){width="330"} | ![](images/4699.png){width="330"}  |
+| ![](images/7981.png){width="330"} | ![](images/8327.png){width="330"} | ![](images/10817.png){width="330"} |
 
 : Sampling the Training Set
 
@@ -193,11 +193,11 @@ classification_test_score <- classification_model %>% evaluate(x_test_scale, y_t
 
 Running this model easily gains high accuracy. The classification_test_score gives an accuracy 0.990.
 
-|                                    |                                    |                                         |
-|------------------------------------|------------------------------------|-----------------------------------------|
-| ![](images/1853.png){width="280"}  | ![](images/5263.png){width="280"}  | ![](images/6326.png){width="280"}       |
-| ![](images/6532.png){width="280"}  | ![](images/9558.png){width="280"}  | ![](images/11724.png){width="280"}      |
-| ![](images/13728.png){width="280"} | ![](images/17363.png){width="280"} | ![](images/18339.png){width="280"} |
+|                                    |                                    |                                    |
+|------------------------------------|------------------------------------|------------------------------------|
+| ![](images/1853.png){width="330"}  | ![](images/5263.png){width="330"}  | ![](images/6326.png){width="330"}  |
+| ![](images/6532.png){width="330"}  | ![](images/9558.png){width="330"}  | ![](images/11724.png){width="330"} |
+| ![](images/13728.png){width="330"} | ![](images/17363.png){width="330"} | ![](images/18339.png){width="330"} |
 
 : Classification Results
 
@@ -277,9 +277,9 @@ Regression Results:
 
 |                                  |                                  |                                  |
 |----------------------------------|----------------------------------|----------------------------------|
-| ![](images/191.png){width="280"} | ![](images/235.png){width="280"} | ![](images/264.png){width="280"} |
-| ![](images/273.png){width="280"} | ![](images/392.png){width="280"} | ![](images/418.png){width="280"} |
-| ![](images/618.png){width="280"} | ![](images/672.png){width="280"} | ![](images/710.png){width="280"} |
+| ![](images/191.png){width="330"} | ![](images/235.png){width="330"} | ![](images/264.png){width="330"} |
+| ![](images/273.png){width="330"} | ![](images/392.png){width="330"} | ![](images/418.png){width="330"} |
+| ![](images/618.png){width="330"} | ![](images/672.png){width="330"} | ![](images/710.png){width="330"} |
 
 : Regression: Predict Location
 
@@ -338,11 +338,11 @@ The loss / accuracy plots show that the network appears to be learning quite nic
 
 Let's combine the regression predictions for feature location and the two slopes, and take a look at the results. Black is actual, red is predicted.
 
-|                                  |                                       |                                  |
-|----------------------------------|---------------------------------------|----------------------------------|
-| ![](images/77.png){width="280"}  | ![](images/90.png){width="280"}       | ![](images/285.png){width="280"} |
-| ![](images/324.png){width="280"} | ![](images/345.png){width="280"}      | ![](images/459.png){width="280"} |
-| ![](images/677.png){width="280"} | ![]()![](images/777.png){width="280"} | ![](images/810.png){width="280"} |
+|                                  |                                  |                                  |
+|----------------------------------|----------------------------------|----------------------------------|
+| ![](images/77.png){width="330"}  | ![](images/90.png){width="330"}  | ![](images/285.png){width="330"} |
+| ![](images/324.png){width="330"} | ![](images/345.png){width="330"} | ![](images/459.png){width="480"} |
+| ![](images/677.png){width="330"} | ![](images/777.png){width="330"} | ![](images/810.png){width="330"} |
 
 : Combined Regression Results
 
