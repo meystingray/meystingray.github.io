@@ -1,0 +1,10 @@
+---
+title: R with data.table
+author: Sean Conroy
+date: '2021-04-02'
+slug: r-w-data-table
+categories: []
+tags: []
+---
+
+[![](images/data.table%20meme.jpeg "r data.table")](https://rdatatable.gitlab.io/data.table/)
